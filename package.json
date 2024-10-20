@@ -1,0 +1,47 @@
+{
+   "name": "rollup-plugin-pull-remote-blob",
+   "version": "0.0.1",
+   "description": "Rollup plugin to download arbitrary files from remote URL-s into any local directory on project build time",
+   "type": "module",
+   "license": "MIT",
+   "repository": {
+      "type": "git",
+      "url": "https://github.com/aabmets/rollup-plugin-pull-remote-blob.git"
+   },
+   "author": "Mattias Aabmets <mattias.aabmets@gmail.com>",
+   "module": "./build/index.js",
+   "exports": {
+      "types": "./types/index.d.ts",
+      "default": "./build/index.js"
+   },
+   "scripts": {
+      "check": "biome check && tsc --noEmit -p tsconfig.json",
+      "buildnow": "bun build ./src/index.ts --outdir ./build",
+      "pubtest": "bun buildnow && bun pm pack --destination ./release",
+      "pubnow": "bun check && bun buildnow && bun publish --dry-run"
+   },
+   "keywords": ["rollup", "plugin", "download", "remote", "files"],
+   "devDependencies": {
+      "@biomejs/biome": "^1.9.4",
+      "@types/bun": "^1.1.11",
+      "@types/jest": "^29.5.13",
+      "@types/node": "^22.7.7",
+      "jest": "^29.7.0",
+      "lefthook": "^1.7.22",
+      "rollup": "^4.24.0",
+      "ts-jest": "^29.2.5"
+   },
+   "peerDependencies": {
+      "typescript": "^5.0.0",
+      "rollup": "^4.0.0"
+   },
+   "peerDependenciesMeta": {
+      "typescript": {
+         "optional": true
+      },
+      "rollup": {
+         "optional": true
+      }
+   },
+   "files": ["build", "types", "README.md", "LICENSE"]
+}

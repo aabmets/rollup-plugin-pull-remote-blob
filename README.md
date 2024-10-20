@@ -1,2 +1,2 @@
-# vite-plugin-pull-remote-blob
-Vite plugin to download arbitrary files into any directory on project build time
+# rollup-plugin-pull-remote-blob
+Rollup plugin to download arbitrary files from remote URL-s into any local directory on project build time
