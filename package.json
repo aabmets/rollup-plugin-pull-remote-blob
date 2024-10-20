@@ -15,10 +15,10 @@
       "default": "./build/index.js"
    },
    "scripts": {
-      "check": "biome check && tsc --noEmit -p tsconfig.json",
+      "check": "tsc --noEmit -p tsconfig.json && biome check",
       "buildnow": "bun build ./src/index.ts --outdir ./build",
       "pubtest": "bun buildnow && bun pm pack --destination ./release",
-      "pubnow": "bun check && bun buildnow && bun publish --dry-run"
+      "pubnow": "bun check --error-on-warnings && bun buildnow && bun publish"
    },
    "keywords": ["rollup", "plugin", "download", "remote", "files"],
    "devDependencies": {
