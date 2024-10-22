@@ -1,6 +1,7 @@
 node_modules
 dist
 packages
+coverage
 .DS_Store
 *.log*
 
