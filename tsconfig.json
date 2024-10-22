@@ -8,12 +8,10 @@
       "jsx": "preserve",
       "allowJs": false,
       "composite": false,
-
-      "rootDir": "./src",
       "outDir": "./dist",
 
       "moduleResolution": "bundler",
-      "verbatimModuleSyntax": true,
+      "verbatimModuleSyntax": false,
       "sourceMap": false,
 
       "strict": true,

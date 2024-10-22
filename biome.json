@@ -31,7 +31,8 @@
             "noUselessUndefinedInitialization": "error",
             "noVoid": "error",
             "useDateNow": "error",
-            "useSimplifiedLogicExpression": "error"
+            "useSimplifiedLogicExpression": "error",
+            "noForEach": "off"
          },
          "correctness": {
             "noConstantMathMinMaxClamp": "error",
@@ -51,6 +52,7 @@
             "noReExportAll": "error"
          },
          "style": {
+            "noUselessElse": "off",
             "noDefaultExport": "off",
             "noDoneCallback": "error",
             "noImplicitBoolean": "error",

@@ -10,6 +10,7 @@
       "url": "https://github.com/aabmets/rollup-plugin-pull-remote-blob.git"
    },
    "author": "Mattias Aabmets <mattias.aabmets@gmail.com>",
+   "types": "./types/index.d.ts",
    "module": "./dist/index.js",
    "exports": {
       "types": "./types/index.d.ts",
@@ -23,6 +24,7 @@
    },
    "devDependencies": {
       "@biomejs/biome": "^1.9.4",
+      "@jest/globals": "^29.7.0",
       "@types/bun": "^1.1.11",
       "@types/decompress": "^4.2.7",
       "@types/jest": "^29.5.13",
