@@ -13,7 +13,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, jest, test } from "@jest/globals";
 import tools from "../src/tools";
-import type { HistoricalBlobOption, HistoryFileContents } from "../types/internal";
+import type { HistoryFileContents, HistoryFileEntry } from "../types/internal";
 
 jest.mock("node:fs");
 
@@ -22,13 +22,7 @@ describe("history file tools", () => {
       jest.clearAllMocks();
    });
 
-   const mockedHistoryFileContents: HistoryFileContents = {
-      e2fd89c1775747c64242a337f5a15b96: {
-         url: "https://www.example.com/somefile.exe",
-         dest: "./resources",
-      },
-   };
-   const mockedHistoryOptions: HistoricalBlobOption[] = [
+   const historyFileEntries: HistoryFileEntry[] = [
       {
          url: "https://www.example.com/somefile.exe",
          dest: "./resources",
@@ -39,9 +33,13 @@ describe("history file tools", () => {
          decompressedFiles: ["somelib.dll", "LICENSE", "README.md"],
       },
    ];
+   const historyFileContents: HistoryFileContents = {
+      e2fd89c1775747c64242a337f5a15b96: historyFileEntries[0],
+      "290c99fb352d216f159a0db7e3b2cd73": historyFileEntries[1],
+   };
 
    test("get history file contents", () => {
-      const contents = tools.getHistoryFileContents(mockedHistoryOptions);
+      const contents = tools.getHistoryFileContents(historyFileEntries);
       const key1 = "e2fd89c1775747c64242a337f5a15b96";
       const key2 = "290c99fb352d216f159a0db7e3b2cd73";
       expect(contents).toHaveProperty(key1);
@@ -55,29 +53,28 @@ describe("history file tools", () => {
       expect(contents[key2].decompressedFiles).toEqual(["somelib.dll", "LICENSE", "README.md"]);
    });
 
-   test("read mocked history", () => {
+   test("read data from history file", () => {
       (fs.existsSync as jest.Mock).mockReturnValue(true);
-      (fs.readFileSync as jest.Mock).mockReturnValue(JSON.stringify(mockedHistoryFileContents));
+      (fs.readFileSync as jest.Mock).mockReturnValue(JSON.stringify(historyFileContents));
       const result: HistoryFileContents = tools.readHistory();
-      expect(result).toEqual(mockedHistoryFileContents);
+      expect(result).toEqual(historyFileContents);
    });
 
-   test("read empty history", () => {
+   test("read empty history file", () => {
       (fs.existsSync as jest.Mock).mockReturnValue(true);
       (fs.readFileSync as jest.Mock).mockReturnValue("{}");
       const result: HistoryFileContents = tools.readHistory();
       expect(result).toEqual({});
    });
 
-   test("write mocked options", () => {
+   test("write data to history file", () => {
       (fs.mkdirSync as jest.Mock).mockImplementation(() => null);
       (fs.writeFileSync as jest.Mock).mockImplementation(() => null);
-      tools.writeHistory(mockedHistoryOptions);
+      tools.writeHistory(historyFileEntries);
 
-      expect(fs.mkdirSync).toHaveBeenCalledWith(path.dirname(tools.HISTORY_FILE_PATH), {
-         recursive: true,
-      });
-      const contents = tools.getHistoryFileContents(mockedHistoryOptions);
+      const dirname = path.dirname(tools.HISTORY_FILE_PATH);
+      expect(fs.mkdirSync).toHaveBeenCalledWith(dirname, { recursive: true });
+      const contents = tools.getHistoryFileContents(historyFileEntries);
       expect(fs.writeFileSync).toHaveBeenCalledWith(
          tools.HISTORY_FILE_PATH,
          JSON.stringify(contents, null, 2),

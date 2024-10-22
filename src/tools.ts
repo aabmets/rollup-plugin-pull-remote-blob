@@ -16,15 +16,15 @@ import axios from "axios";
 import decompress, { type File } from "decompress";
 import type {
    DestDetails,
-   HistoricalBlobOption,
    HistoryFileContents,
+   HistoryFileEntry,
    RemoteBlobOption,
 } from "../types/internal";
 import utils from "./utils";
 
 const HISTORY_FILE_PATH = path.resolve(__dirname, "history.json");
 
-function getHistoryFileContents(histOpts: HistoricalBlobOption[]): HistoryFileContents {
+function getHistoryFileContents(histOpts: HistoryFileEntry[]): HistoryFileContents {
    const data: HistoryFileContents = {};
    histOpts.forEach((opt) => {
       data[utils.digestString(opt.url)] = opt;
@@ -40,7 +40,7 @@ function readHistory(): HistoryFileContents {
    return {};
 }
 
-function writeHistory(histOpts: HistoricalBlobOption[]): void {
+function writeHistory(histOpts: HistoryFileEntry[]): void {
    const data: HistoryFileContents = getHistoryFileContents(histOpts);
    fs.mkdirSync(path.dirname(HISTORY_FILE_PATH), { recursive: true });
    fs.writeFileSync(HISTORY_FILE_PATH, JSON.stringify(data, null, 2));
@@ -56,7 +56,7 @@ function getDestMeta(option: RemoteBlobOption): DestDetails {
    return { fileExists, filePath, dirPath, isFile };
 }
 
-function allDecompressedFilesExist(histOpt: HistoricalBlobOption): boolean {
+function allDecompressedFilesExist(histOpt: HistoryFileEntry): boolean {
    for (const fileName of histOpt?.decompressedFiles || []) {
       const filePath = path.join(histOpt.dest, fileName);
       if (!fs.existsSync(filePath)) {
@@ -66,7 +66,7 @@ function allDecompressedFilesExist(histOpt: HistoricalBlobOption): boolean {
    return true;
 }
 
-async function downloadWriteFile(
+async function downloadAndWriteFile(
    option: RemoteBlobOption,
    destDetails: DestDetails,
 ): Promise<void> {
@@ -92,6 +92,6 @@ export default {
    writeHistory,
    getDestMeta,
    allDecompressedFilesExist,
-   downloadWriteFile,
+   downloadAndWriteFile,
    decompressArchive,
 };
