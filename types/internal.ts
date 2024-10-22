@@ -18,14 +18,14 @@ interface RemoteBlobOption {
    decompress?: boolean | DecompressOptions;
 }
 
-interface HistoricalBlobOption {
+interface HistoryFileEntry {
    url: string;
    dest: string;
    decompressedFiles?: string[];
 }
 
 interface HistoryFileContents {
-   [key: string]: HistoricalBlobOption;
+   [key: string]: HistoryFileEntry;
 }
 
 interface DestDetails {
@@ -35,4 +35,4 @@ interface DestDetails {
    isFile: boolean;
 }
 
-export type { RemoteBlobOption, HistoricalBlobOption, HistoryFileContents, DestDetails };
+export type { RemoteBlobOption, HistoryFileEntry, HistoryFileContents, DestDetails };
