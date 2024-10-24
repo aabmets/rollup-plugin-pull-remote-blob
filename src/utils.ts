@@ -17,4 +17,15 @@ function digestString(data: string): string {
    return digest.substring(0, 32);
 }
 
-export default { digestString };
+function oneLineRegex(strings: TemplateStringsArray, ...values: unknown[]): string {
+   const rawPattern = strings.raw.reduce(
+      (acc: string, str: string, i: number) => acc + str + (values[i] || ""),
+      "",
+   );
+   return rawPattern
+      .split("\n")
+      .map((line: string) => line.replace(/^\s+/, "").replace(/\s*#.*$/, ""))
+      .join("");
+}
+
+export default { digestString, oneLineRegex };
