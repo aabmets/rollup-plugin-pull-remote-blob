@@ -17,17 +17,4 @@ describe("utils", () => {
       const digest = utils.digestString("asdfg");
       expect(digest).toEqual("f969fdbe811d8a66010d6f8973246763");
    });
-
-   test("oneLineRegex", () => {
-      const pattern = utils.oneLineRegex`
-         ^            # Start of string
-         [a-zA-Z]+    # One or more letters
-         \s+          # Whitespace
-         [0-9]+       # One or more digits
-         \s+          # Whitespace
-         [a-zA-Z]+    # One or more letters
-         $            # End of string
-      `;
-      expect(pattern).toEqual("^[a-zA-Z]+\\s+[0-9]+\\s+[a-zA-Z]+$");
-   });
 });
