@@ -11,10 +11,10 @@
 
 import crypto from "node:crypto";
 
-function digestString(data: string): string {
+function digestString(data: string, outputSize = 64): string {
    const hash = crypto.createHash("sha256");
    const digest = hash.update(data).digest("hex");
-   return digest.substring(0, 32);
+   return digest.substring(0, outputSize);
 }
 
 export default { digestString };
