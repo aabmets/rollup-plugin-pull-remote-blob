@@ -10,6 +10,12 @@
  */
 
 import crypto from "node:crypto";
+import fs from "node:fs";
+import fsp from "node:fs/promises";
+import path from "node:path";
+import axios from "axios";
+import type { HistoryFileEntry, RemoteBlobOption } from "../types/internal";
+import type { DestDetails } from "../types/internal";
 
 function digestString(data: string, outputSize = 64): string {
    const hash = crypto.createHash("sha256");
@@ -17,4 +23,21 @@ function digestString(data: string, outputSize = 64): string {
    return digest.substring(0, outputSize);
 }
 
-export default { digestString };
+function getDestDetails(srcObj: RemoteBlobOption | HistoryFileEntry): DestDetails {
+   const destPath = path.resolve(srcObj.dest);
+   const isFile = path.extname(destPath) !== "";
+   const dirPath = isFile ? path.dirname(destPath) : destPath;
+   const fileName = isFile ? path.basename(destPath) : path.basename(srcObj.url);
+   const filePath = path.join(dirPath, fileName);
+   const fileExists = fs.existsSync(filePath);
+   const dirExists = fs.existsSync(dirPath);
+   return { fileExists, filePath, dirExists, dirPath, isFile };
+}
+
+async function downloadFile(option: RemoteBlobOption, dest: DestDetails): Promise<void> {
+   await fsp.mkdir(dest.dirPath, { recursive: true });
+   const response = await axios.get(option.url, { responseType: "arraybuffer" });
+   await fsp.writeFile(dest.filePath, response.data);
+}
+
+export default { digestString, getDestDetails, downloadFile };

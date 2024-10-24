@@ -12,7 +12,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, jest, test } from "@jest/globals";
-import tools from "../src/tools";
+import history from "../src/history";
 import type { HistoryFileContents, HistoryFileEntry } from "../types/internal";
 
 jest.mock("node:fs");
@@ -39,7 +39,7 @@ describe("history file tools", () => {
    };
 
    test("get history file contents", () => {
-      const contents = tools.getHistoryFileContents(historyFileEntries);
+      const contents = history.fileContentsFromEntries(historyFileEntries);
       const key1 = "e2fd89c1775747c64242a337f5a15b96";
       const key2 = "290c99fb352d216f159a0db7e3b2cd73";
       expect(contents).toHaveProperty(key1);
@@ -56,27 +56,27 @@ describe("history file tools", () => {
    test("read data from history file", () => {
       (fs.existsSync as jest.Mock).mockReturnValue(true);
       (fs.readFileSync as jest.Mock).mockReturnValue(JSON.stringify(historyFileContents));
-      const result: HistoryFileContents = tools.readHistory();
+      const result: HistoryFileContents = history.readFile();
       expect(result).toEqual(historyFileContents);
    });
 
    test("read empty history file", () => {
       (fs.existsSync as jest.Mock).mockReturnValue(true);
       (fs.readFileSync as jest.Mock).mockReturnValue("{}");
-      const result: HistoryFileContents = tools.readHistory();
+      const result: HistoryFileContents = history.readFile();
       expect(result).toEqual({});
    });
 
    test("write data to history file", () => {
       (fs.mkdirSync as jest.Mock).mockImplementation(() => null);
       (fs.writeFileSync as jest.Mock).mockImplementation(() => null);
-      tools.writeHistory(historyFileEntries);
+      history.writeFile(historyFileEntries);
 
-      const dirname = path.dirname(tools.HISTORY_FILE_PATH);
+      const dirname = path.dirname(history.FILE_PATH);
       expect(fs.mkdirSync).toHaveBeenCalledWith(dirname, { recursive: true });
-      const contents = tools.getHistoryFileContents(historyFileEntries);
+      const contents = history.fileContentsFromEntries(historyFileEntries);
       expect(fs.writeFileSync).toHaveBeenCalledWith(
-         tools.HISTORY_FILE_PATH,
+         history.FILE_PATH,
          JSON.stringify(contents, null, 2),
       );
    });

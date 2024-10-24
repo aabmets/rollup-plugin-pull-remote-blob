@@ -32,6 +32,7 @@ interface HistoryFileContents {
 interface DestDetails {
    fileExists: boolean;
    filePath: string;
+   dirExists: boolean;
    dirPath: string;
    isFile: boolean;
 }
