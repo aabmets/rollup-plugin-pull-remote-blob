@@ -14,17 +14,17 @@ import path from "node:path";
 import type { HistoryFileContents, HistoryFileEntry } from "../types/internal";
 import utils from "./utils";
 
-const FILE_PATH = path.resolve(__dirname, "history.json");
+const FILE_PATH = path.resolve(__dirname, "historical_entries.json");
 
-function fileContentsFromEntries(histOpts: HistoryFileEntry[]): HistoryFileContents {
+function fileContentsFromEntries(entries: HistoryFileEntry[]): HistoryFileContents {
    const data: HistoryFileContents = {};
-   histOpts.forEach((opt) => {
-      data[utils.digestString(opt.url, 32)] = opt;
+   entries.forEach((entry) => {
+      data[utils.digestString(entry.url, 32)] = entry;
    });
    return data;
 }
 
-function readFile(): HistoryFileContents {
+export function readFile(): HistoryFileContents {
    if (fs.existsSync(FILE_PATH)) {
       const historyData = fs.readFileSync(FILE_PATH, "utf8");
       return historyData ? JSON.parse(historyData) : {};
@@ -32,8 +32,8 @@ function readFile(): HistoryFileContents {
    return {};
 }
 
-function writeFile(histOpts: HistoryFileEntry[]): void {
-   const data = fileContentsFromEntries(histOpts);
+function writeFile(entries: HistoryFileEntry[]): void {
+   const data = fileContentsFromEntries(entries);
    fs.mkdirSync(path.dirname(FILE_PATH), { recursive: true });
    fs.writeFileSync(FILE_PATH, JSON.stringify(data, null, 2));
 }
