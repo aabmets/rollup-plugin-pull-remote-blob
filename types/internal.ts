@@ -22,6 +22,7 @@ interface HistoryFileEntry {
    url: string;
    dest: string;
    decompressedFiles?: string[];
+   decompressOptionsDigest?: string;
 }
 
 interface HistoryFileContents {

@@ -13,7 +13,7 @@ import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
 import axios from "axios";
-import decompress, { type File } from "decompress";
+import decompress, { type DecompressOptions, type File } from "decompress";
 import type {
    DestDetails,
    HistoryFileContents,
@@ -79,6 +79,20 @@ async function decompressArchive(option: RemoteBlobOption, dest: DestDetails): P
    return files.map((file) => file.path);
 }
 
+function digestDecompressOptions(options: boolean | DecompressOptions): string {
+   if (typeof options === "boolean") {
+      return utils.digestString(options.toString());
+   }
+   return utils.digestString(
+      [
+         `${options?.filter}`,
+         `${options?.map}`,
+         `${options?.plugins?.length}`,
+         `${options?.strip}`,
+      ].join(""),
+   );
+}
+
 export default {
    HISTORY_FILE_PATH,
    getHistoryFileContents,
@@ -88,4 +102,5 @@ export default {
    allDecompressedFilesExist,
    downloadAndWriteFile,
    decompressArchive,
+   digestDecompressOptions,
 };
