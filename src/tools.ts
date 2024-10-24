@@ -46,7 +46,7 @@ function writeHistory(histOpts: HistoryFileEntry[]): void {
    fs.writeFileSync(HISTORY_FILE_PATH, JSON.stringify(data, null, 2));
 }
 
-function getDestMeta(option: RemoteBlobOption): DestDetails {
+function getDestDetails(option: RemoteBlobOption): DestDetails {
    const destPath = path.resolve(option.dest);
    const isFile = path.extname(destPath) !== "";
    const dirPath = isFile ? path.dirname(destPath) : destPath;
@@ -66,22 +66,16 @@ function allDecompressedFilesExist(histOpt: HistoryFileEntry): boolean {
    return true;
 }
 
-async function downloadAndWriteFile(
-   option: RemoteBlobOption,
-   destDetails: DestDetails,
-): Promise<void> {
-   await fsp.mkdir(destDetails.dirPath, { recursive: true });
+async function downloadAndWriteFile(option: RemoteBlobOption, dest: DestDetails): Promise<void> {
+   await fsp.mkdir(dest.dirPath, { recursive: true });
    const response = await axios.get(option.url, { responseType: "arraybuffer" });
-   await fsp.writeFile(destDetails.filePath, response.data);
+   await fsp.writeFile(dest.filePath, response.data);
 }
 
-async function decompressArchive(
-   option: RemoteBlobOption,
-   destDetails: DestDetails,
-): Promise<string[]> {
+async function decompressArchive(option: RemoteBlobOption, dest: DestDetails): Promise<string[]> {
    const decOpt = typeof option.decompress === "object" ? option.decompress : {};
-   const files: File[] = await decompress(destDetails.filePath, destDetails.dirPath, decOpt);
-   await fsp.unlink(destDetails.filePath);
+   const files: File[] = await decompress(dest.filePath, dest.dirPath, decOpt);
+   await fsp.unlink(dest.filePath);
    return files.map((file) => file.path);
 }
 
@@ -90,7 +84,7 @@ export default {
    getHistoryFileContents,
    readHistory,
    writeHistory,
-   getDestMeta,
+   getDestDetails,
    allDecompressedFilesExist,
    downloadAndWriteFile,
    decompressArchive,
