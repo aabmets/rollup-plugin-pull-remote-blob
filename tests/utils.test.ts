@@ -21,9 +21,36 @@ jest.mock("axios");
 jest.mock("node:fs");
 jest.mock("node:fs/promises");
 
+function getPathsForSorting(sep: string) {
+   return {
+      filePaths: [
+         `parent${sep}dir${sep}file1.txt`,
+         `parent${sep}dir${sep}subdir${sep}file2.txt`,
+         `parent${sep}dir${sep}subdir${sep}subsubdir${sep}file3.txt`,
+         `parent${sep}file4.txt`,
+      ],
+      expected: [
+         `parent${sep}dir${sep}subdir${sep}subsubdir${sep}file3.txt`,
+         `parent${sep}dir${sep}subdir${sep}file2.txt`,
+         `parent${sep}dir${sep}file1.txt`,
+         `parent${sep}file4.txt`,
+      ],
+   };
+}
+
 describe("utils", () => {
    afterEach(() => {
       jest.clearAllMocks();
+   });
+
+   test("sortPathsByDepth with Unix separators", () => {
+      const { filePaths, expected } = getPathsForSorting("/");
+      expect(utils.sortPathsByDepth(filePaths, "/")).toEqual(expected);
+   });
+
+   test("sortPathsByDepth with Windows separators", () => {
+      const { filePaths, expected } = getPathsForSorting("\\");
+      expect(utils.sortPathsByDepth(filePaths, "\\")).toEqual(expected);
    });
 
    test("digestString", () => {

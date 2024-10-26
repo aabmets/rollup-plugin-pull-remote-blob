@@ -17,6 +17,14 @@ import axios from "axios";
 import type { HistoryFileEntry, RemoteBlobOption } from "../types/internal";
 import type { DestDetails } from "../types/internal";
 
+function sortPathsByDepth(paths: string[], sep = path.sep) {
+   return paths.sort((a: string, b: string) => {
+      const depthA = a.split(sep).length;
+      const depthB = b.split(sep).length;
+      return depthB - depthA;
+   });
+}
+
 function digestString(data: string, outputSize = 64): string {
    const hash = crypto.createHash("sha256");
    const digest = hash.update(data).digest("hex");
@@ -40,4 +48,4 @@ async function downloadFile(option: RemoteBlobOption, dest: DestDetails): Promis
    await fsp.writeFile(dest.filePath, response.data);
 }
 
-export default { digestString, getDestDetails, downloadFile };
+export default { sortPathsByDepth, digestString, getDestDetails, downloadFile };
