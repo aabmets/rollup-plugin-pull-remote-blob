@@ -42,17 +42,24 @@ function allDecompressedFilesExist(entry: HistoryFileEntry): boolean {
 }
 
 async function removeAllDecompressedFiles(entry: HistoryFileEntry): Promise<void> {
+   if (!entry?.decompressedFiles) {
+      return;
+   }
+   async function unlinkFile(filePath: string) {
+      await fsp.unlink(filePath).catch((_) => null);
+   }
    const dest = utils.getDestDetails(entry);
-   const allPromises: Promise<unknown>[] = [];
-   for (const partialFilePath of entry?.decompressedFiles || []) {
-      const fullFilePath = path.join(dest.dirPath, partialFilePath);
-      allPromises.push(fsp.unlink(fullFilePath));
-   }
-   await Promise.all(allPromises);
-   const isDirEmpty = fs.readdirSync(dest.dirPath).length === 0;
-   if (dest.dirExists && isDirEmpty) {
-      fs.rmdirSync(dest.dirPath);
-   }
+   const fullFilePaths: string[] = entry.decompressedFiles.map((pfp) =>
+      path.join(dest.dirPath, pfp),
+   );
+   await Promise.all(fullFilePaths.map((ffp) => unlinkFile(ffp)));
+   const dirPaths = fullFilePaths.map((ffp) => path.dirname(ffp));
+   const sortedDirs = utils.sortPathsByDepth(dirPaths);
+   [...new Set(sortedDirs)].map((sud) => {
+      if (fs.readdirSync(sud).length === 0) {
+         fs.rmdirSync(sud);
+      }
+   });
 }
 
 async function decompressArchive(option: RemoteBlobOption, dest: DestDetails): Promise<string[]> {
