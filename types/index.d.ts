@@ -11,7 +11,7 @@
 
 import type { File as ArchivedFile, DecompressOptions } from "decompress";
 import type { Plugin } from "rollup";
-import type { RemoteBlobOption } from "./internal";
+import type { RemoteBlobOption } from "../src/types";
 
 declare module "rollup-plugin-pull-remote-blob" {
    export function pullRemoteBlobPlugin(options?: RemoteBlobOption[]): Plugin;
