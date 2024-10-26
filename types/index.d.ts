@@ -8,3 +8,12 @@
  *
  *   SPDX-License-Identifier: MIT
  */
+
+import type { Plugin } from "rollup";
+import type { RemoteBlobOption } from "./internal";
+
+declare module "rollup-plugin-pull-remote-blob" {
+   export function pullRemoteBlobPlugin(options?: RemoteBlobOption[]): Plugin;
+}
+
+export type { RemoteBlobOption };

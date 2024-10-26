@@ -9,86 +9,63 @@
  *   SPDX-License-Identifier: MIT
  */
 
-import fs from "node:fs";
-import fsp from "node:fs/promises";
-import path from "node:path";
-import axios from "axios";
-import type { DecompressOptions } from "decompress";
-import decompress from "decompress";
 import type { Plugin } from "rollup";
+import { assert } from "superstruct";
+import type { HistoryFileContents, HistoryFileEntry, RemoteBlobOption } from "../types/internal";
+import archive from "./archive";
+import history from "./history";
+import schemas from "./schemas";
+import utils from "./utils";
 
-interface PullRemoteBlobOption {
-   url: string;
-   dest: string;
-   alwaysPull?: boolean;
-   decompress?: DecompressOptions | boolean;
-}
-
-interface DestMeta {
-   filePath: string;
-   dirPath: string;
-   isFile: boolean;
-   exists: boolean;
-}
-
-const HISTORY_FILE_PATH = path.resolve(__dirname, "history.json");
-
-function readHistory(): PullRemoteBlobOption[] {
-   if (fs.existsSync(HISTORY_FILE_PATH)) {
-      const historyData = fs.readFileSync(HISTORY_FILE_PATH, "utf8");
-      return historyData ? JSON.parse(historyData) : [];
+async function optionProcessor(
+   option: RemoteBlobOption,
+   oldEntry?: HistoryFileEntry,
+): Promise<HistoryFileEntry> {
+   assert(option, schemas.RemoteBlobOptionStruct);
+   const dest = utils.getDestDetails(option);
+   const newEntry: HistoryFileEntry = {
+      url: option.url,
+      dest: option.dest,
+   };
+   if (oldEntry?.decompressedFiles) {
+      if (option?.decompress) {
+         const allExist = archive.allDecompressedFilesExist(oldEntry);
+         const newDigest = archive.digestDecompressOptions(option.decompress);
+         if (allExist && newDigest === oldEntry.decompressOptionsDigest) {
+            return oldEntry;
+         } else if (newDigest !== oldEntry.decompressOptionsDigest) {
+            await archive.removeAllDecompressedFiles(oldEntry);
+         }
+      } else {
+         await archive.removeAllDecompressedFiles(oldEntry);
+      }
+   } else if (dest.fileExists) {
+      return newEntry;
    }
-   return [];
-}
-
-function writeHistory(options: PullRemoteBlobOption[]): void {
-   fs.mkdirSync(path.dirname(HISTORY_FILE_PATH), { recursive: true });
-   fs.writeFileSync(HISTORY_FILE_PATH, JSON.stringify(options, null, 2));
-}
-
-function getDestMeta(option: PullRemoteBlobOption): DestMeta {
-   const destPath = path.resolve(option.dest);
-   const isFile = path.extname(destPath) !== "";
-   const dirPath = isFile ? path.dirname(destPath) : destPath;
-   const fileName = isFile ? path.basename(destPath) : path.basename(option.url);
-   const filePath = path.join(dirPath, fileName);
-   const exists = fs.existsSync(filePath);
-   return { filePath, dirPath, isFile, exists };
-}
-
-async function buildStartHandler(options?: PullRemoteBlobOption[]) {
-   if (!Array.isArray(options)) {
-      return;
+   await utils.downloadFile(option, dest);
+   if (option.decompress) {
+      newEntry.decompressedFiles = await archive.decompressArchive(option, dest);
+      newEntry.decompressOptionsDigest = archive.digestDecompressOptions(option.decompress);
    }
-   const history = readHistory();
-   const pullPromises = options.map(async (option) => {
-      if (typeof option !== "object") {
-         return;
-      }
-      const dest: DestMeta = getDestMeta(option);
-
-      const filter = (opt: PullRemoteBlobOption) =>
-         opt.url === option.url && dest.exists && !option.alwaysPull;
-      if (history.some(filter)) {
-         return;
-      }
-      await fsp.mkdir(dest.dirPath, { recursive: true });
-      const response = await axios.get(option.url, { responseType: "arraybuffer" });
-      await fsp.writeFile(dest.filePath, response.data);
-
-      if (option.decompress) {
-         const decOpt = typeof option.decompress === "object" ? option.decompress : {};
-         await decompress(dest.filePath, dest.dirPath, decOpt);
-         await fsp.unlink(dest.filePath);
-      }
-   });
-   await Promise.all(pullPromises);
-   writeHistory(options);
+   return newEntry;
 }
 
-export default function pullRemoteBlobPlugin(options?: PullRemoteBlobOption[]): Plugin {
+export function pullRemoteBlobPlugin(options?: RemoteBlobOption[]): Plugin {
    return {
       name: "pull-remote-blob",
-      buildStart: () => buildStartHandler(options),
+      buildStart: async () => {
+         if (Array.isArray(options)) {
+            const contents: HistoryFileContents = history.readFile();
+            const pullPromises = options.map((option: RemoteBlobOption) => {
+               const digest = utils.digestString(option.url, 32);
+               const oldEntry = digest in contents ? contents[digest] : undefined;
+               return optionProcessor(option, oldEntry);
+            });
+            const entries: HistoryFileEntry[] = await Promise.all(pullPromises);
+            history.writeFile(entries);
+         }
+      },
    };
 }
+
+export type { RemoteBlobOption };
