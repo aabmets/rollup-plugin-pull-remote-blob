@@ -11,10 +11,10 @@
 
 import type { Plugin } from "rollup";
 import { assert } from "superstruct";
+import type { HistoryFileContents, HistoryFileEntry, RemoteBlobOption } from "../types/internal";
 import archive from "./archive";
 import history from "./history";
 import schemas from "./schemas";
-import type { HistoryFileContents, HistoryFileEntry, RemoteBlobOption } from "./types";
 import utils from "./utils";
 
 async function optionProcessor(

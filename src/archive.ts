@@ -13,7 +13,7 @@ import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
 import decompress, { type DecompressOptions, type File } from "decompress";
-import type { DestDetails, HistoryFileEntry, RemoteBlobOption } from "./types";
+import type { DestDetails, HistoryFileEntry, RemoteBlobOption } from "../types/internal";
 import utils from "./utils";
 
 function digestDecompressOptions(options: boolean | DecompressOptions): string {

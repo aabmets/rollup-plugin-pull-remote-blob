@@ -11,7 +11,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import type { HistoryFileContents, HistoryFileEntry } from "./types";
+import type { HistoryFileContents, HistoryFileEntry } from "../types/internal";
 import utils from "./utils";
 
 const FILE_PATH = path.resolve(__dirname, "historical_entries.json");

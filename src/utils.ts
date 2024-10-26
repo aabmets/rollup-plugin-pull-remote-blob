@@ -14,8 +14,8 @@ import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
 import axios from "axios";
-import type { HistoryFileEntry, RemoteBlobOption } from "./types";
-import type { DestDetails } from "./types";
+import type { HistoryFileEntry, RemoteBlobOption } from "../types/internal";
+import type { DestDetails } from "../types/internal";
 
 function sortPathsByDepth(paths: string[], sep = path.sep) {
    return paths.sort((a: string, b: string) => {

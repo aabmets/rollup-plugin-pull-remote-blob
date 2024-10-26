@@ -14,8 +14,8 @@ import fsp from "node:fs/promises";
 import path from "node:path";
 import { afterEach, describe, expect, jest, test } from "@jest/globals";
 import axios from "axios";
-import type { DestDetails, RemoteBlobOption } from "../src/types";
 import utils from "../src/utils";
+import type { DestDetails, RemoteBlobOption } from "../types/internal";
 
 jest.mock("axios");
 jest.mock("node:fs");

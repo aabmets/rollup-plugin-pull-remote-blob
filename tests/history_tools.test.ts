@@ -13,7 +13,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, jest, test } from "@jest/globals";
 import history from "../src/history";
-import type { HistoryFileContents, HistoryFileEntry } from "../src/types";
+import type { HistoryFileContents, HistoryFileEntry } from "../types/internal";
 
 jest.mock("node:fs");
 
