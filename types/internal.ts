@@ -37,10 +37,4 @@ interface DestDetails {
    isFile: boolean;
 }
 
-export type {
-   DecompressOptions,
-   RemoteBlobOption,
-   HistoryFileEntry,
-   HistoryFileContents,
-   DestDetails,
-};
+export type { RemoteBlobOption, HistoryFileEntry, HistoryFileContents, DestDetails };

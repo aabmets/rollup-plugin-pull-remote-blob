@@ -32,6 +32,9 @@ function digestString(data: string, outputSize = 64): string {
 }
 
 function getDestDetails(srcObj: RemoteBlobOption | HistoryFileEntry): DestDetails {
+   if (path.extname(srcObj.dest) !== "" && "decompress" in srcObj && srcObj?.decompress) {
+      throw new Error(`Destination must be a directory when decompressing: '${srcObj.dest}'`);
+   }
    const destPath = path.resolve(srcObj.dest);
    const isFile = path.extname(destPath) !== "";
    const dirPath = isFile ? path.dirname(destPath) : destPath;
