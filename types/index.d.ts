@@ -10,10 +10,10 @@
  */
 
 import type { Plugin } from "rollup";
-import type { RemoteBlobOption } from "./internal";
+import type { DecompressOptions, RemoteBlobOption } from "./internal";
 
 declare module "rollup-plugin-pull-remote-blob" {
    export function pullRemoteBlobPlugin(options?: RemoteBlobOption[]): Plugin;
 }
 
-export type { RemoteBlobOption };
+export type { RemoteBlobOption, DecompressOptions };

@@ -67,5 +67,3 @@ export function pullRemoteBlobPlugin(options?: RemoteBlobOption[]): Plugin {
       },
    };
 }
-
-export type { RemoteBlobOption };
