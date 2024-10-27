@@ -11,10 +11,15 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import url from "node:url";
 import type { HistoryFileContents, HistoryFileEntry } from "../types/internal";
 import utils from "./utils";
 
-const FILE_PATH = path.resolve(__dirname, "historical_entries.json");
+const FILE_PATH = (() => {
+   const __filename = url.fileURLToPath(import.meta.url);
+   const __dirname = path.dirname(__filename);
+   return path.resolve(__dirname, "historical_entries.json");
+})();
 
 function fileContentsFromEntries(entries: HistoryFileEntry[]): HistoryFileContents {
    const data: HistoryFileContents = {};
