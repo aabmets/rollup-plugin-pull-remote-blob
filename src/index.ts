@@ -9,6 +9,7 @@
  *   SPDX-License-Identifier: MIT
  */
 
+import fsp from "node:fs/promises";
 import type { Plugin } from "rollup";
 import { assert } from "superstruct";
 import type { HistoryFileContents, HistoryFileEntry, RemoteBlobOption } from "../types/internal";
@@ -22,12 +23,14 @@ async function optionProcessor(
    oldEntry?: HistoryFileEntry,
 ): Promise<HistoryFileEntry> {
    assert(option, schemas.RemoteBlobOptionStruct);
-   const dest = utils.getDestDetails(option);
+   const newDest = utils.getDestDetails(option);
    const newEntry: HistoryFileEntry = {
       url: option.url,
       dest: option.dest,
    };
-   if (oldEntry?.decompressedFiles) {
+   if (newDest.fileExists) {
+      return newEntry;
+   } else if (oldEntry?.decompressedFiles) {
       if (option?.decompress) {
          const allExist = archive.allDecompressedFilesExist(oldEntry);
          const newDigest = archive.digestDecompressOptions(option.decompress);
@@ -39,12 +42,15 @@ async function optionProcessor(
       } else {
          await archive.removeAllDecompressedFiles(oldEntry);
       }
-   } else if (dest.fileExists) {
-      return newEntry;
+   } else if (oldEntry) {
+      const oldDest = utils.getDestDetails(oldEntry);
+      if (oldDest.fileExists) {
+         await fsp.unlink(oldDest.filePath);
+      }
    }
-   await utils.downloadFile(option, dest);
+   await utils.downloadFile(option, newDest);
    if (option.decompress) {
-      newEntry.decompressedFiles = await archive.decompressArchive(option, dest);
+      newEntry.decompressedFiles = await archive.decompressArchive(option, newDest);
       newEntry.decompressOptionsDigest = archive.digestDecompressOptions(option.decompress);
    }
    return newEntry;
