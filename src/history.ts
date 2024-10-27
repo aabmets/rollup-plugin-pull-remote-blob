@@ -13,7 +13,7 @@ import fs from "node:fs";
 import path from "node:path";
 import url from "node:url";
 import type { HistoryFileContents, HistoryFileEntry } from "../types/internal";
-import utils from "./utils";
+import utils from "./utils.js";
 
 const FILE_PATH = (() => {
    const __filename = url.fileURLToPath(import.meta.url);

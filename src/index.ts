@@ -12,10 +12,10 @@
 import type { Plugin } from "rollup";
 import { assert } from "superstruct";
 import type { HistoryFileContents, HistoryFileEntry, RemoteBlobOption } from "../types/internal";
-import archive from "./archive";
-import history from "./history";
-import schemas from "./schemas";
-import utils from "./utils";
+import archive from "./archive.js";
+import history from "./history.js";
+import schemas from "./schemas.js";
+import utils from "./utils.js";
 
 async function optionProcessor(
    option: RemoteBlobOption,

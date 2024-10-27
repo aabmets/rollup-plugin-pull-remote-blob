@@ -14,7 +14,7 @@ import fsp from "node:fs/promises";
 import path from "node:path";
 import decompress, { type DecompressOptions, type File } from "decompress";
 import type { DestDetails, HistoryFileEntry, RemoteBlobOption } from "../types/internal";
-import utils from "./utils";
+import utils from "./utils.js";
 
 function digestDecompressOptions(options: boolean | DecompressOptions): string {
    if (typeof options === "boolean") {
