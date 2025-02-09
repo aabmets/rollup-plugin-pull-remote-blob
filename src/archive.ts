@@ -56,8 +56,12 @@ async function removeAllDecompressedFiles(entry: HistoryFileEntry): Promise<void
    const dirPaths = fullFilePaths.map((ffp) => path.dirname(ffp));
    const sortedDirs = utils.sortPathsByDepth(dirPaths);
    [...new Set(sortedDirs)].map((sud) => {
-      if (fs.readdirSync(sud).length === 0) {
-         fs.rmdirSync(sud);
+      try {
+         if (fs.readdirSync(sud).length === 0) {
+            fs.rmdirSync(sud);
+         }
+      } catch {
+         return;
       }
    });
 }
