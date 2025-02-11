@@ -17,6 +17,7 @@ export interface RemoteBlobOption {
    alwaysPull?: boolean;
    decompress?: boolean | DecompressOptions;
    verbose?: boolean;
+   sizeBytes?: number;
 }
 
 export interface HistoryFileEntry {

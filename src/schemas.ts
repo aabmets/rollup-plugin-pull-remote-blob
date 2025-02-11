@@ -40,6 +40,7 @@ const RemoteBlobOptionStruct = object({
    alwaysPull: optional(boolean()),
    decompress: optional(union([boolean(), DecompressOptionsStruct])),
    verbose: optional(boolean()),
+   sizeBytes: optional(number()),
 });
 
 export default { RemoteBlobOptionStruct };
