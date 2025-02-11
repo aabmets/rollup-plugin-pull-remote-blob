@@ -1,5 +1,5 @@
 {
-   "include": ["src/**/*", "vitests/**/*"],
+   "include": ["src/**/*"],
    "compilerOptions": {
       "lib": ["ESNext", "DOM"],
       "target": "ESNext",
@@ -26,6 +26,7 @@
       "noUnusedParameters": true,
       "noPropertyAccessFromIndexSignature": false,
 
+      "baseUrl": ".",
       "paths": {
          "@src/*": ["./src/*"],
          "@types": ["./types/internal.d.ts"]
