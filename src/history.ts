@@ -12,7 +12,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import url from "node:url";
-import type { HistoryFileContents, HistoryFileEntry } from "../types/internal";
+import type * as t from "@types";
 import utils from "./utils.js";
 
 const FILE_PATH = (() => {
@@ -21,15 +21,15 @@ const FILE_PATH = (() => {
    return path.resolve(__dirname, "historical_entries.json");
 })();
 
-function fileContentsFromEntries(entries: HistoryFileEntry[]): HistoryFileContents {
-   const data: HistoryFileContents = {};
+function fileContentsFromEntries(entries: t.HistoryFileEntry[]): t.HistoryFileContents {
+   const data: t.HistoryFileContents = {};
    entries.forEach((entry) => {
       data[utils.digestString(entry.url, 32)] = entry;
    });
    return data;
 }
 
-export function readFile(): HistoryFileContents {
+export function readFile(): t.HistoryFileContents {
    if (fs.existsSync(FILE_PATH)) {
       const historyData = fs.readFileSync(FILE_PATH, "utf8");
       return historyData ? JSON.parse(historyData) : {};
@@ -37,7 +37,7 @@ export function readFile(): HistoryFileContents {
    return {};
 }
 
-function writeFile(entries: HistoryFileEntry[]): void {
+function writeFile(entries: t.HistoryFileEntry[]): void {
    const data = fileContentsFromEntries(entries);
    fs.mkdirSync(path.dirname(FILE_PATH), { recursive: true });
    fs.writeFileSync(FILE_PATH, JSON.stringify(data, null, 2));

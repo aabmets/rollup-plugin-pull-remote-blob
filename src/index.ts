@@ -10,21 +10,21 @@
  */
 
 import fsp from "node:fs/promises";
+import type * as t from "@types";
 import type { Plugin } from "rollup";
 import { assert } from "superstruct";
-import type { HistoryFileContents, HistoryFileEntry, RemoteBlobOption } from "../types/internal";
 import archive from "./archive.js";
 import history from "./history.js";
 import schemas from "./schemas.js";
 import utils from "./utils.js";
 
 async function optionProcessor(
-   option: RemoteBlobOption,
-   oldEntry?: HistoryFileEntry,
-): Promise<HistoryFileEntry> {
+   option: t.RemoteBlobOption,
+   oldEntry?: t.HistoryFileEntry,
+): Promise<t.HistoryFileEntry> {
    assert(option, schemas.RemoteBlobOptionStruct);
    const newDest = utils.getDestDetails(option);
-   const newEntry: HistoryFileEntry = {
+   const newEntry: t.HistoryFileEntry = {
       url: option.url,
       dest: option.dest,
    };
@@ -56,18 +56,18 @@ async function optionProcessor(
    return newEntry;
 }
 
-export function pullRemoteBlobPlugin(options?: RemoteBlobOption[]): Plugin {
+export function pullRemoteBlobPlugin(options?: t.RemoteBlobOption[]): Plugin {
    return {
       name: "pull-remote-blob",
       buildStart: async () => {
          if (Array.isArray(options)) {
-            const contents: HistoryFileContents = history.readFile();
-            const pullPromises = options.map((option: RemoteBlobOption) => {
-               const digest = utils.digestString(option.url, 32);
+            const contents: t.HistoryFileContents = history.readFile();
+            const pullPromises = options.map((option: t.RemoteBlobOption) => {
+               const digest = utils.digestString(JSON.stringify(option), 32);
                const oldEntry = digest in contents ? contents[digest] : undefined;
                return optionProcessor(option, oldEntry);
             });
-            const entries: HistoryFileEntry[] = await Promise.all(pullPromises);
+            const entries: t.HistoryFileEntry[] = await Promise.all(pullPromises);
             history.writeFile(entries);
          }
       },

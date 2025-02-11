@@ -13,9 +13,8 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
+import type * as t from "@types";
 import axios from "axios";
-import type { HistoryFileEntry, RemoteBlobOption } from "../types/internal";
-import type { DestDetails } from "../types/internal";
 
 function sortPathsByDepth(paths: string[], sep = path.sep) {
    return paths.sort((a: string, b: string) => {
@@ -31,7 +30,7 @@ function digestString(data: string, outputSize = 64): string {
    return digest.substring(0, outputSize);
 }
 
-function getDestDetails(srcObj: RemoteBlobOption | HistoryFileEntry): DestDetails {
+function getDestDetails(srcObj: t.RemoteBlobOption | t.HistoryFileEntry): t.DestDetails {
    if (path.extname(srcObj.dest) !== "" && "decompress" in srcObj && srcObj?.decompress) {
       throw new Error(`Destination must be a directory when decompressing: '${srcObj.dest}'`);
    }
@@ -45,7 +44,12 @@ function getDestDetails(srcObj: RemoteBlobOption | HistoryFileEntry): DestDetail
    return { fileExists, filePath, dirExists, dirPath, isFile };
 }
 
-async function downloadFile(option: RemoteBlobOption, dest: DestDetails): Promise<void> {
+async function downloadFile(option: t.RemoteBlobOption, dest: t.DestDetails): Promise<void> {
+   if (option.verbose) {
+      const urlObj = new URL(option.url);
+      const lastSegment = urlObj.pathname.replace(/\/$/, "").split("/").pop();
+      console.info(`Pulling remote blob: '${lastSegment}'`);
+   }
    await fsp.mkdir(dest.dirPath, { recursive: true });
    const response = await axios.get(option.url, { responseType: "arraybuffer" });
    await fsp.writeFile(dest.filePath, response.data);
