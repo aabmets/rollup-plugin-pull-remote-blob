@@ -11,18 +11,16 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { afterEach, describe, expect, jest, test } from "@jest/globals";
-import history from "../src/history";
-import type { HistoryFileContents, HistoryFileEntry } from "../types/internal";
-
-jest.mock("node:fs");
+import history from "@src/history";
+import type * as t from "@types";
+import { afterEach, describe, expect, test, vi } from "vitest";
 
 describe("history file tools", () => {
    afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
    });
 
-   const historyFileEntries: HistoryFileEntry[] = [
+   const historyFileEntries: t.HistoryFileEntry[] = [
       {
          url: "https://www.example.com/somefile.exe",
          dest: "./resources",
@@ -33,7 +31,7 @@ describe("history file tools", () => {
          decompressedFiles: ["somelib.dll", "LICENSE", "README.md"],
       },
    ];
-   const historyFileContents: HistoryFileContents = {
+   const historyFileContents: t.HistoryFileContents = {
       e2fd89c1775747c64242a337f5a15b96: historyFileEntries[0],
       "290c99fb352d216f159a0db7e3b2cd73": historyFileEntries[1],
    };
@@ -54,22 +52,22 @@ describe("history file tools", () => {
    });
 
    test("read data from history file", () => {
-      (fs.existsSync as jest.Mock).mockReturnValue(true);
-      (fs.readFileSync as jest.Mock).mockReturnValue(JSON.stringify(historyFileContents));
-      const result: HistoryFileContents = history.readFile();
+      vi.spyOn(fs, "existsSync").mockReturnValue(true);
+      vi.spyOn(fs, "readFileSync").mockReturnValue(JSON.stringify(historyFileContents));
+      const result: t.HistoryFileContents = history.readFile();
       expect(result).toEqual(historyFileContents);
    });
 
    test("read empty history file", () => {
-      (fs.existsSync as jest.Mock).mockReturnValue(true);
-      (fs.readFileSync as jest.Mock).mockReturnValue("{}");
-      const result: HistoryFileContents = history.readFile();
+      vi.spyOn(fs, "existsSync").mockReturnValue(true);
+      vi.spyOn(fs, "readFileSync").mockReturnValue("{}");
+      const result: t.HistoryFileContents = history.readFile();
       expect(result).toEqual({});
    });
 
    test("write data to history file", () => {
-      (fs.mkdirSync as jest.Mock).mockImplementation(() => null);
-      (fs.writeFileSync as jest.Mock).mockImplementation(() => null);
+      vi.spyOn(fs, "mkdirSync").mockImplementation(() => undefined);
+      vi.spyOn(fs, "writeFileSync").mockImplementation(() => undefined);
       history.writeFile(historyFileEntries);
 
       const dirname = path.dirname(history.FILE_PATH);

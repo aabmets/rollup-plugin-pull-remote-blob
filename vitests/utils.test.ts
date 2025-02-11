@@ -12,14 +12,10 @@
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
-import { afterEach, describe, expect, jest, test } from "@jest/globals";
+import utils from "@src/utils";
+import type * as t from "@types";
 import axios from "axios";
-import utils from "../src/utils";
-import type { DestDetails, RemoteBlobOption } from "../types/internal";
-
-jest.mock("axios");
-jest.mock("node:fs");
-jest.mock("node:fs/promises");
+import { afterEach, describe, expect, test, vi } from "vitest";
 
 function getPathsForSorting(sep: string) {
    return {
@@ -40,7 +36,7 @@ function getPathsForSorting(sep: string) {
 
 describe("utils", () => {
    afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
    });
 
    test("sortPathsByDepth with Unix separators", () => {
@@ -65,31 +61,27 @@ describe("utils", () => {
    });
 
    test("getDestDetails", () => {
-      const option: RemoteBlobOption = {
+      vi.spyOn(fs, "existsSync").mockReturnValue(true);
+      const option: t.RemoteBlobOption = {
          url: "https://www.example.com/somefile.exe",
          dest: "./resources",
       };
-      (fs.existsSync as jest.Mock).mockReturnValue(true);
-      const dest: DestDetails = utils.getDestDetails(option);
+      const dest: t.DestDetails = utils.getDestDetails(option);
       expect(dest.fileExists).toEqual(true);
       expect(dest.dirPath).toEqual(path.resolve(option.dest));
    });
 
    test("downloadFile", async () => {
-      const mockedFsp = fsp as jest.Mocked<typeof fsp>;
-      const mockedAxios = axios as jest.Mocked<typeof axios>;
-
-      mockedFsp.mkdir.mockResolvedValue(undefined);
-      mockedFsp.writeFile.mockResolvedValue(undefined);
-      mockedAxios.get.mockResolvedValue({
+      vi.spyOn(fsp, "mkdir").mockResolvedValue(undefined);
+      vi.spyOn(fsp, "writeFile").mockResolvedValue(undefined);
+      vi.spyOn(axios, "get").mockResolvedValue({
          data: Buffer.from("file data"),
       });
-
-      const mockOption: RemoteBlobOption = {
+      const mockOption: t.RemoteBlobOption = {
          url: "https://www.example.com/file",
          dest: "/some/path",
       };
-      const mockDest: DestDetails = {
+      const mockDest: t.DestDetails = {
          fileExists: false,
          filePath: "/some/path/file.txt",
          dirExists: true,
@@ -98,8 +90,8 @@ describe("utils", () => {
       };
       await utils.downloadFile(mockOption, mockDest);
 
-      expect(mockedFsp.mkdir).toHaveBeenCalledWith(mockDest.dirPath, { recursive: true });
-      expect(mockedAxios.get).toHaveBeenCalledWith(mockOption.url, { responseType: "arraybuffer" });
-      expect(mockedFsp.writeFile).toHaveBeenCalledWith(mockDest.filePath, Buffer.from("file data"));
+      expect(fsp.mkdir).toHaveBeenCalledWith(mockDest.dirPath, { recursive: true });
+      expect(fsp.writeFile).toHaveBeenCalledWith(mockDest.filePath, Buffer.from("file data"));
+      expect(axios.get).toHaveBeenCalledWith(mockOption.url, { responseType: "arraybuffer" });
    });
 });
