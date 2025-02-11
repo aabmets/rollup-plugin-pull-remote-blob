@@ -37,7 +37,7 @@
          "correctness": {
             "noConstantMathMinMaxClamp": "error",
             "noInvalidBuiltinInstantiation": "error",
-            "noUndeclaredDependencies": "error",
+            "noUndeclaredDependencies": "off",
             "noUndeclaredVariables": "error",
             "noUnusedFunctionParameters": "warn",
             "noUnusedImports": "warn",
@@ -90,7 +90,8 @@
             "useThrowOnlyError": "error"
          },
          "suspicious": {
-            "noConsole": "warn",
+            "noConsole": "off",
+            "noConsoleLog": "error",
             "noEmptyBlockStatements": "error",
             "noEvolvingTypes": "off",
             "noMisplacedAssertion": "error",

@@ -1,5 +1,5 @@
 {
-   "include": ["src/**/*"],
+   "include": ["src/**/*", "vitests/**/*"],
    "compilerOptions": {
       "lib": ["ESNext", "DOM"],
       "target": "ESNext",
@@ -24,6 +24,11 @@
       "noUnusedLocals": true,
       "noImplicitReturns": true,
       "noUnusedParameters": true,
-      "noPropertyAccessFromIndexSignature": false
+      "noPropertyAccessFromIndexSignature": false,
+
+      "paths": {
+         "@src/*": ["./src/*"],
+         "@types": ["./types/internal.d.ts"]
+      }
    }
 }
