@@ -11,30 +11,29 @@
 
 import type { DecompressOptions } from "decompress";
 
-interface RemoteBlobOption {
+export interface RemoteBlobOption {
    url: string;
    dest: string;
    alwaysPull?: boolean;
    decompress?: boolean | DecompressOptions;
+   verbose?: boolean;
 }
 
-interface HistoryFileEntry {
+export interface HistoryFileEntry {
    url: string;
    dest: string;
    decompressedFiles?: string[];
    decompressOptionsDigest?: string;
 }
 
-interface HistoryFileContents {
+export interface HistoryFileContents {
    [key: string]: HistoryFileEntry;
 }
 
-interface DestDetails {
+export interface DestDetails {
    fileExists: boolean;
    filePath: string;
    dirExists: boolean;
    dirPath: string;
    isFile: boolean;
 }
-
-export type { RemoteBlobOption, HistoryFileEntry, HistoryFileContents, DestDetails };
