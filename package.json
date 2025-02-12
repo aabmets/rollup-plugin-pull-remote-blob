@@ -24,6 +24,7 @@
    },
    "dependencies": {
       "@types/decompress": ">=4.0.0",
+      "@types/multi-progress": "^2.0.6",
       "@types/validator": ">=13.0.0",
       "axios": ">=1.6.0",
       "decompress": ">=4.0.0",
