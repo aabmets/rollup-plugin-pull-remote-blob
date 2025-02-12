@@ -16,8 +16,12 @@ export interface RemoteBlobOption {
    dest: string;
    alwaysPull?: boolean;
    decompress?: boolean | DecompressOptions;
+   sizeBytes?: (() => number) | number;
+}
+
+export interface PluginConfig {
+   blobs: RemoteBlobOption[];
    verbose?: boolean;
-   sizeBytes?: number;
 }
 
 export interface HistoryFileEntry {
@@ -25,6 +29,11 @@ export interface HistoryFileEntry {
    dest: string;
    decompressedFiles?: string[];
    decompressOptionsDigest?: string;
+}
+
+export interface BlobProcessorArgs {
+   option: RemoteBlobOption;
+   oldEntry?: HistoryFileEntry;
 }
 
 export interface HistoryFileContents {

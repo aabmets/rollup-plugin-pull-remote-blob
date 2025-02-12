@@ -39,8 +39,12 @@ const RemoteBlobOptionStruct = object({
    dest: string(),
    alwaysPull: optional(boolean()),
    decompress: optional(union([boolean(), DecompressOptionsStruct])),
-   verbose: optional(boolean()),
    sizeBytes: optional(number()),
 });
 
-export default { RemoteBlobOptionStruct };
+const PluginConfigStruct = object({
+   blobs: array(RemoteBlobOptionStruct),
+   verbose: optional(boolean()),
+});
+
+export default { RemoteBlobOptionStruct, PluginConfigStruct };

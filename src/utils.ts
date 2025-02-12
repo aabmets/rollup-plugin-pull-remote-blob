@@ -45,11 +45,6 @@ function getDestDetails(srcObj: t.RemoteBlobOption | t.HistoryFileEntry): t.Dest
 }
 
 async function downloadFile(option: t.RemoteBlobOption, dest: t.DestDetails): Promise<void> {
-   if (option.verbose) {
-      const urlObj = new URL(option.url);
-      const lastSegment = urlObj.pathname.replace(/\/$/, "").split("/").pop();
-      console.info(`Pulling remote blob: '${lastSegment}'`);
-   }
    await fsp.mkdir(dest.dirPath, { recursive: true });
    const response = await axios.get(option.url, { responseType: "arraybuffer" });
    await fsp.writeFile(dest.filePath, response.data);

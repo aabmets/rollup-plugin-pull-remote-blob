@@ -18,11 +18,8 @@ import history from "./history.js";
 import schemas from "./schemas.js";
 import utils from "./utils.js";
 
-async function optionProcessor(
-   option: t.RemoteBlobOption,
-   oldEntry?: t.HistoryFileEntry,
-): Promise<t.HistoryFileEntry> {
-   assert(option, schemas.RemoteBlobOptionStruct);
+async function blobProcessor(args: t.BlobProcessorArgs): Promise<t.HistoryFileEntry> {
+   const { option, oldEntry } = args;
    const newDest = utils.getDestDetails(option);
    const newEntry: t.HistoryFileEntry = {
       url: option.url,
@@ -56,20 +53,20 @@ async function optionProcessor(
    return newEntry;
 }
 
-export function pullRemoteBlobPlugin(options?: t.RemoteBlobOption[]): Plugin {
+export function pullRemoteBlobPlugin(config?: t.PluginConfig): Plugin {
+   assert(config, schemas.PluginConfigStruct);
    return {
       name: "pull-remote-blob",
       buildStart: async () => {
-         if (Array.isArray(options)) {
-            const contents: t.HistoryFileContents = history.readFile();
-            const pullPromises = options.map((option: t.RemoteBlobOption) => {
-               const digest = utils.digestString(JSON.stringify(option), 32);
-               const oldEntry = digest in contents ? contents[digest] : undefined;
-               return optionProcessor(option, oldEntry);
-            });
-            const entries: t.HistoryFileEntry[] = await Promise.all(pullPromises);
-            history.writeFile(entries);
-         }
+         const contents: t.HistoryFileContents = history.readFile();
+         const pullPromises = config.blobs.map((option: t.RemoteBlobOption) => {
+            assert(option, schemas.RemoteBlobOptionStruct);
+            const digest = utils.digestString(JSON.stringify(option), 32);
+            const oldEntry = digest in contents ? contents[digest] : undefined;
+            return blobProcessor({ option, oldEntry });
+         });
+         const entries: t.HistoryFileEntry[] = await Promise.all(pullPromises);
+         history.writeFile(entries);
       },
    };
 }
