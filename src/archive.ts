@@ -17,6 +17,18 @@ import decompress from "decompress";
 import type { DecompressOptions, File } from "decompress";
 import utils from "./utils.js";
 
+function digestRemoteBlobOption(option: t.RemoteBlobOption): string {
+   return utils.digestString(
+      [
+         option.url,
+         option.dest,
+         !!option.alwaysPull,
+         digestDecompressOptions(!!option.decompress),
+         (option.sizeBytes || "").toString(),
+      ].join(),
+   );
+}
+
 function digestDecompressOptions(options: boolean | DecompressOptions): string {
    if (typeof options === "boolean") {
       return utils.digestString(options.toString());
@@ -78,6 +90,7 @@ async function decompressArchive(
 }
 
 export default {
+   digestRemoteBlobOption,
    digestDecompressOptions,
    allDecompressedFilesExist,
    removeAllDecompressedFiles,
