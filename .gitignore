@@ -29,3 +29,6 @@ coverage
 
 # Editor-based Rest Client
 .idea/httpRequests
+
+# Plugin history file
+src/historical_entries.json
