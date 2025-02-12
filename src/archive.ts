@@ -26,11 +26,7 @@ function digestDecompressOptions(options: boolean | DecompressOptions): string {
          (options?.map || "").toString(),
          (options?.filter || "").toString(),
          (options?.strip || "").toString(),
-         (options?.plugins || [])
-            .map((plugin) => {
-               return plugin.toString();
-            })
-            .join(),
+         (options?.plugins || []).map((plg) => plg.toString()).join(),
       ].join(),
    );
 }
