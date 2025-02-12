@@ -23,11 +23,15 @@ function digestDecompressOptions(options: boolean | DecompressOptions): string {
    }
    return utils.digestString(
       [
-         `${options?.filter}`,
-         `${options?.map}`,
-         `${options?.plugins?.length}`,
-         `${options?.strip}`,
-      ].join(""),
+         (options?.map || "").toString(),
+         (options?.filter || "").toString(),
+         (options?.strip || "").toString(),
+         (options?.plugins || [])
+            .map((plugin) => {
+               return plugin.toString();
+            })
+            .join(),
+      ].join(),
    );
 }
 
