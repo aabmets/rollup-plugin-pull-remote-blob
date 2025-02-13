@@ -24,26 +24,28 @@ export interface PluginConfig {
    verbose?: boolean;
 }
 
+export interface DestDetails {
+   fileExists: boolean;
+   filePath: string;
+   dirExists: boolean;
+   dirPath: string;
+}
+
 export interface HistoryFileEntry {
    url: string;
    dest: string;
-   decompressedFiles?: string[];
-   decompressOptionsDigest?: string;
-}
-
-export interface BlobProcessorArgs {
-   option: RemoteBlobOption;
-   oldEntry?: HistoryFileEntry;
+   optionsDigest: string;
+   decompression: {
+      optionsDigest: string;
+      filesList: string[];
+   };
 }
 
 export interface HistoryFileContents {
    [key: string]: HistoryFileEntry;
 }
 
-export interface DestDetails {
-   fileExists: boolean;
-   filePath: string;
-   dirExists: boolean;
-   dirPath: string;
-   isFile: boolean;
+export interface ProcessorArgs {
+   contents: HistoryFileContents;
+   option: RemoteBlobOption;
 }
