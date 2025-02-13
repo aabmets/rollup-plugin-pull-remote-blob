@@ -13,14 +13,12 @@ import path from "node:path";
 import url from "node:url";
 import type * as t from "@types";
 
-const historyFileName = "historical_entries.json";
+export const historyFileName = "historical_entries.json";
 
-const historyFilePath: string = (() => {
+export const historyFilePath: string = (() => {
    const filename = url.fileURLToPath(import.meta.url);
    const dirname = path.dirname(filename);
    return path.resolve(dirname, historyFileName);
 })();
 
-const defaultPluginConfig: t.PluginConfig = { verbose: true, blobs: [] };
-
-export default { historyFilePath, defaultPluginConfig };
+export const defaultPluginConfig: t.PluginConfig = { verbose: true, blobs: [] };
