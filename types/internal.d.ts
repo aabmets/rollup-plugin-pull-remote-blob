@@ -15,6 +15,7 @@ import type MultiProgress from "multi-progress";
 export interface RemoteBlobOption {
    url: string;
    dest: string;
+   prettyName?: string;
    alwaysPull?: boolean;
    decompress?: boolean | DecompressOptions;
    sizeBytes?: (() => number) | number;

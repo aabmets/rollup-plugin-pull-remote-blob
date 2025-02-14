@@ -37,6 +37,7 @@ const RemoteBlobOptionStruct = object({
       return validator.isURL(`${value}`) || errMsg;
    }),
    dest: string(),
+   prettyName: optional(string()),
    alwaysPull: optional(boolean()),
    decompress: optional(union([boolean(), DecompressOptionsStruct])),
    sizeBytes: optional(union([number(), func()])),
