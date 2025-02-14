@@ -10,6 +10,7 @@
  */
 
 import type { DecompressOptions } from "decompress";
+import type MultiProgress from "multi-progress";
 
 export interface RemoteBlobOption {
    url: string;
@@ -46,6 +47,14 @@ export interface HistoryFileContents {
 }
 
 export interface ProcessorArgs {
+   config: PluginConfig;
    contents: HistoryFileContents;
    option: RemoteBlobOption;
+   progress: MultiProgress;
+}
+
+export interface DownloaderArgs {
+   config: PluginConfig;
+   option: RemoteBlobOption;
+   progress: MultiProgress;
 }
