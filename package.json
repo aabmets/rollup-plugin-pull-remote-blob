@@ -24,11 +24,11 @@
    },
    "dependencies": {
       "@types/decompress": ">=4.0.0",
-      "@types/multi-progress": "^2.0.6",
       "@types/validator": ">=13.0.0",
       "axios": ">=1.6.0",
+      "chalk": ">=5.0.0",
       "decompress": ">=4.0.0",
-      "multi-progress": ">=4.0.0",
+      "multi-progress-bars": ">=5.0.0",
       "superstruct": ">=2.0.0",
       "validator": ">=13.0.0"
    },
