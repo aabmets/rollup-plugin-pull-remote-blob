@@ -16,14 +16,20 @@ import decompress from "decompress";
 import type { DecompressOptions, File } from "decompress";
 import utils from "./utils.js";
 
-function digestRemoteBlobOption(option: t.RemoteBlobOption, decompressOptionsDigest = ""): string {
+function digestRemoteBlobOption(
+   option: t.RemoteBlobOption,
+   dcmpOptDigest: string,
+   index: number,
+): string {
    return utils.digestString(
       [
          option.url,
          option.dest,
+         option.prettyName,
          !!option.alwaysPull,
-         decompressOptionsDigest || digestDecompressOptions(option.decompress),
          (option.sizeBytes || "").toString(),
+         dcmpOptDigest,
+         index,
       ].join(),
    );
 }
