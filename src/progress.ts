@@ -9,63 +9,73 @@
  *   SPDX-License-Identifier: MIT
  */
 
-const SPINNER_CHARS_1 = [
-   "\u2801",
-   "\u2809",
-   "\u2819",
-   "\u281B",
-   "\u281E",
-   "\u2856",
-   "\u28C6",
-   "\u28E4",
-   "\u28E0",
-   "\u28A0",
-   "\u2820",
-];
+/**
+ * A generator function that produces animated Hilbert-style spinner frames.
+ *
+ * @param barWidth - The width of the spinner bar.
+ * @param numCrawlers - The number of moving elements within the spinner.
+ * @yields - The next frame of the spinner animation as a string.
+ */
+export function* hilbertSpinnerGenerator(
+   barWidth = 40,
+   numCrawlers = 7,
+): Generator<string, void, void> {
+   const charSet1 = [
+      "\u2801",
+      "\u2809",
+      "\u2819",
+      "\u281B",
+      "\u281E",
+      "\u2856",
+      "\u28C6",
+      "\u28E4",
+      "\u28E0",
+      "\u28A0",
+      "\u2820",
+   ];
+   const charSet2 = [
+      "\u2804",
+      "\u2844",
+      "\u28C4",
+      "\u28E4",
+      "\u28F0",
+      "\u28B2",
+      "\u2833",
+      "\u281B",
+      "\u280B",
+      "\u2809",
+      "\u2808",
+   ];
+   let progress = 0;
+   while (true) {
+      // Each cell takes 8 steps to go through (plus 3 for trailing).
+      const cycle = 8 * Math.floor(barWidth / numCrawlers);
 
-const SPINNER_CHARS_2 = [
-   "\u2804",
-   "\u2844",
-   "\u28C4",
-   "\u28E4",
-   "\u28F0",
-   "\u28B2",
-   "\u2833",
-   "\u281B",
-   "\u280B",
-   "\u2809",
-   "\u2808",
-];
+      progress %= cycle;
 
-export function hilbertSpinner(progress: number, barWidth = 40, numCrawlers = 7): string {
-   let offset: number = progress;
-
-   // Each cell takes 8 steps to go through (plus 3 for trailing).
-   const cycle = 8 * Math.floor(barWidth / numCrawlers);
-
-   offset %= cycle;
-
-   const spinnerCharsArray: string[] = new Array(barWidth).fill(" ").map((_, idx) => {
-      const adjId = -8 * (idx % Math.floor(barWidth / numCrawlers)) + offset;
-      const leftOver = -cycle + 8;
-      if (idx % 2 === 0) {
-         if (adjId >= leftOver && adjId < leftOver + 3) {
-            return SPINNER_CHARS_1[cycle + adjId];
+      const spinnerCharsArray: string[] = new Array(barWidth).fill(" ").map((_, idx) => {
+         const adjId = -8 * (idx % Math.floor(barWidth / numCrawlers)) + progress;
+         const leftOver = -cycle + 8;
+         if (idx % 2 === 0) {
+            if (adjId >= leftOver && adjId < leftOver + 3) {
+               return charSet1[cycle + adjId];
+            }
+            if (adjId < 0 || adjId >= charSet1.length) {
+               return " ";
+            }
+            return charSet1[adjId];
+         } else {
+            if (adjId >= leftOver && adjId < leftOver + 3) {
+               return charSet2[cycle + adjId];
+            }
+            if (adjId < 0 || adjId >= charSet2.length) {
+               return " ";
+            }
+            return charSet2[adjId];
          }
-         if (adjId < 0 || adjId >= SPINNER_CHARS_1.length) {
-            return " ";
-         }
-         return SPINNER_CHARS_1[adjId];
-      } else {
-         if (adjId >= leftOver && adjId < leftOver + 3) {
-            return SPINNER_CHARS_2[cycle + adjId];
-         }
-         if (adjId < 0 || adjId >= SPINNER_CHARS_2.length) {
-            return " ";
-         }
-         return SPINNER_CHARS_2[adjId];
-      }
-   });
+      });
 
-   return spinnerCharsArray.join("");
+      yield spinnerCharsArray.join("");
+      progress++;
+   }
 }
