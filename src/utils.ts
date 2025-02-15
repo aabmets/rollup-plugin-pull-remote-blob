@@ -11,10 +11,8 @@
 
 import crypto from "node:crypto";
 import fs from "node:fs";
-import fsp from "node:fs/promises";
 import path from "node:path";
 import type * as t from "@types";
-import axios from "axios";
 import * as c from "./constants.js";
 
 function sortPathsByDepth(paths: string[], sep = path.sep) {
@@ -45,12 +43,6 @@ function getDestDetails(option: t.RemoteBlobOption): t.DestDetails {
    return { fileExists, filePath, dirExists, dirPath };
 }
 
-async function downloadFile(option: t.RemoteBlobOption, dest: t.DestDetails): Promise<void> {
-   await fsp.mkdir(dest.dirPath, { recursive: true });
-   const response = await axios.get(option.url, { responseType: "arraybuffer" });
-   await fsp.writeFile(dest.filePath, response.data);
-}
-
 function readHistoryFile(): t.HistoryFileContents {
    try {
       if (fs.existsSync(c.historyFilePath)) {
@@ -66,7 +58,7 @@ function readHistoryFile(): t.HistoryFileContents {
 function writeHistoryFile(entries: t.HistoryFileEntry[]): void {
    const data: t.HistoryFileContents = {};
    entries.forEach((entry) => {
-      data[entry.optionsDigest] = entry;
+      data[entry.blobOptionsDigest] = entry;
    });
    fs.mkdirSync(path.dirname(c.historyFilePath), { recursive: true });
    fs.writeFileSync(c.historyFilePath, JSON.stringify(data, null, 2));
@@ -76,7 +68,6 @@ export default {
    sortPathsByDepth,
    digestString,
    getDestDetails,
-   downloadFile,
    readHistoryFile,
    writeHistoryFile,
 };
