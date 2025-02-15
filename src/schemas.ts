@@ -45,7 +45,7 @@ const RemoteBlobOptionStruct = object({
 
 const PluginConfigStruct = object({
    blobs: array(RemoteBlobOptionStruct),
-   verbose: optional(boolean()),
+   showProgress: optional(boolean()),
 });
 
 export default { PluginConfigStruct };

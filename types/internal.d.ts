@@ -22,7 +22,7 @@ export interface RemoteBlobOption {
 
 export interface PluginConfig {
    blobs: RemoteBlobOption[];
-   verbose?: boolean;
+   showProgress?: boolean;
 }
 
 export interface DestDetails {

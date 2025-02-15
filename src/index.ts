@@ -12,6 +12,7 @@
 import type * as t from "@types";
 import type { Plugin } from "rollup";
 import { assert } from "superstruct";
+import { defaultPluginConfig } from "./constants.js";
 import { downloadFiles } from "./downloader.js";
 import { processBlobOption } from "./processor.js";
 import schemas from "./schemas.js";
@@ -36,7 +37,12 @@ export function pullRemoteBlobPlugin(config?: t.PluginConfig): Plugin {
    return {
       name: "pull-remote-blob",
       buildStart: async () => {
-         config.blobs.length > 0 ? await pluginMain(config) : null;
+         if (config.blobs.length > 0) {
+            await pluginMain({
+               ...defaultPluginConfig,
+               ...config,
+            });
+         }
       },
    };
 }

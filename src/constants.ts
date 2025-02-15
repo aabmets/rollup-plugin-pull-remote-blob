@@ -21,4 +21,4 @@ export const historyFilePath: string = (() => {
    return path.resolve(dirname, historyFileName);
 })();
 
-export const defaultPluginConfig: t.PluginConfig = { verbose: true, blobs: [] };
+export const defaultPluginConfig: t.PluginConfig = { blobs: [], showProgress: true };
