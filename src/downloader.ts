@@ -12,23 +12,27 @@
 import type * as t from "@types";
 import axios, { type AxiosResponse } from "axios";
 
-export async function getRemoteFileSizeBytes(
-   option: t.RemoteBlobOption | t.HistoryFileEntry,
-): Promise<number | null> {
-   if ("sizeBytes" in option) {
-      let out = option.sizeBytes;
-      if (option.sizeBytes instanceof Function) {
-         out = option.sizeBytes();
+export async function getRemoteFileSizeBytes(option: t.RemoteBlobOption): Promise<number | null> {
+   let out: unknown = null;
+   try {
+      if ("sizeBytes" in option) {
+         if (option.sizeBytes instanceof Function) {
+            out = await option.sizeBytes();
+         } else {
+            out = option.sizeBytes;
+         }
+      } else {
+         const resp: AxiosResponse = await axios.head(option.url);
+         if ("content-length" in resp.headers) {
+            out = resp.headers["content-length"];
+         }
       }
-      try {
-         return Number(out);
-      } catch {
-         return null;
+      const outNum = Number(out);
+      if (Number.isSafeInteger(outNum) && outNum > 0) {
+         return outNum;
       }
-   }
-   const resp: AxiosResponse = await axios.head(option.url);
-   if ("content-length" in resp.headers) {
-      return Number(resp.headers["content-length"]);
+   } catch {
+      return null;
    }
    return null;
 }

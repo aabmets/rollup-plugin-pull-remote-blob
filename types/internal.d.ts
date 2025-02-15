@@ -17,7 +17,7 @@ export interface RemoteBlobOption {
    prettyName?: string;
    alwaysPull?: boolean;
    decompress?: boolean | DecompressOptions;
-   sizeBytes?: (() => number) | number;
+   sizeBytes?: number | (() => Promise<number>);
 }
 
 export interface PluginConfig {
