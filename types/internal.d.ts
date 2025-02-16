@@ -86,7 +86,6 @@ export interface ProgressBarsReturn {
 }
 
 export interface WorkerData {
-   url: string;
+   option: RemoteBlobOption;
    details: DestDetails;
-   showProgress: boolean;
 }
