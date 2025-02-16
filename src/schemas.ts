@@ -9,6 +9,7 @@
  *   SPDX-License-Identifier: MIT
  */
 
+import path from "node:path";
 import {
    any,
    array,
@@ -44,22 +45,21 @@ const RemoteBlobOptionStruct = object({
    sizeBytes: optional(union([number(), func()])),
 });
 
-const PluginConfigStruct = object({
-   blobs: array(RemoteBlobOptionStruct),
-   showProgress: optional(boolean()),
-});
-
-export const PluginConfigValidator = refine(PluginConfigStruct, "duplicates", (config) => {
-   const rboDigests: string[] = [];
-   for (const option of config.blobs) {
-      const digest = utils.digestRemoteBlobOption({
-         url: option.url,
-         dest: option.dest,
-      });
-      if (rboDigests.includes(digest)) {
-         return `Duplicate entry: ${option.url} -> ${option.dest}`;
+export const PluginConfigStruct = object({
+   blobs: refine(array(RemoteBlobOptionStruct), "constraints", (blobs) => {
+      const rboDigests: string[] = [];
+      for (const option of blobs) {
+         const digest = utils.digestRemoteBlobOption(option);
+         if (rboDigests.includes(digest)) {
+            return `Duplicate entry: ${option.url} -> ${option.dest}`;
+         } else {
+            rboDigests.push(digest);
+         }
+         if (path.extname(option.dest) !== "" && !!option.decompress) {
+            return `Destination must be a directory when decompressing: '${option.dest}'`;
+         }
       }
-      rboDigests.push(digest);
-   }
-   return true;
+      return true;
+   }),
+   showProgress: optional(boolean()),
 });

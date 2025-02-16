@@ -36,7 +36,6 @@ export async function processBlobOption(args: t.ProcessorArgs): Promise<t.Proces
          return mustDownload;
       }
       const oldEntry = contents[blobOptDigest];
-      const oldDetails = utils.getDestDetails(oldEntry as t.RemoteBlobOption);
       const skipDownload = { option, entry: oldEntry, skipDownload: true };
 
       if (newDetails.fileExists && oldEntry.blobOptionsDigest === newEntry.blobOptionsDigest) {
@@ -51,6 +50,7 @@ export async function processBlobOption(args: t.ProcessorArgs): Promise<t.Proces
             return mustDownload;
          }
       }
+      const oldDetails = utils.getDestDetails(oldEntry);
       if (oldDetails.fileExists) {
          await fsp.unlink(oldDetails.filePath);
          return mustDownload;

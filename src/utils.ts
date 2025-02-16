@@ -23,25 +23,22 @@ function sortPathsByDepth(paths: string[], sep = path.sep) {
    });
 }
 
-function digestData(data: unknown): string {
+function digestData(data: any): string {
    const hashInput = JSON.stringify(data) || "";
    const hash = crypto.createHash("sha256");
    const digest = hash.update(hashInput).digest("hex");
    return digest.substring(0, 64);
 }
 
-function digestRemoteBlobOption(option: Partial<t.RemoteBlobOption>): string {
-   return digestData([option.url, option.dest]);
+function digestRemoteBlobOption(data: t.UrlDest): string {
+   return digestData([data.url, data.dest]);
 }
 
-function getDestDetails(option: t.RemoteBlobOption): t.DestDetails {
-   const destPath = path.resolve(option.dest);
+function getDestDetails(data: t.UrlDest): t.DestDetails {
+   const destPath = path.resolve(data.dest);
    const isFile = path.extname(destPath) !== "";
-   if (isFile && option?.decompress) {
-      throw new Error(`Destination must be a directory when decompressing: '${option.dest}'`);
-   }
    const dirPath = isFile ? path.dirname(destPath) : destPath;
-   const fileName = path.basename(isFile ? destPath : option.url);
+   const fileName = path.basename(isFile ? destPath : data.url);
    const filePath = path.join(dirPath, fileName);
    const fileExists = fs.existsSync(filePath);
    const dirExists = fs.existsSync(dirPath);

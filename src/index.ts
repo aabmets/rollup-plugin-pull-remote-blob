@@ -15,12 +15,12 @@ import { assert } from "superstruct";
 import { defaultPluginConfig } from "./constants.js";
 import { downloadFiles } from "./downloader.js";
 import { processBlobOption } from "./processor.js";
-import { PluginConfigValidator } from "./schemas.js";
+import { PluginConfigStruct } from "./schemas.js";
 import utils from "./utils.js";
 
 async function pluginMain(config: t.PluginConfig): Promise<void> {
    const contents: t.HistoryFileContents = utils.readHistoryFile();
-   const promises = config.blobs.map((option: t.RemoteBlobOption) => {
+   const promises = config.blobs.map((option) => {
       return processBlobOption({ contents, option });
    });
    const procRetArray: t.ProcessorReturn[] = await Promise.all(promises);
@@ -31,7 +31,7 @@ async function pluginMain(config: t.PluginConfig): Promise<void> {
 }
 
 export function pullRemoteBlobPlugin(config?: t.PluginConfig): Plugin {
-   assert(config, PluginConfigValidator);
+   assert(config, PluginConfigStruct);
    return {
       name: "pull-remote-blob",
       buildStart: async () => {

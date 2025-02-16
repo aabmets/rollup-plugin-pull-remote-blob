@@ -94,6 +94,7 @@
             "noConsoleLog": "error",
             "noEmptyBlockStatements": "error",
             "noEvolvingTypes": "off",
+            "noExplicitAny": "off",
             "noMisplacedAssertion": "error",
             "noReactSpecificProps": "off",
             "noSkippedTests": "error",
