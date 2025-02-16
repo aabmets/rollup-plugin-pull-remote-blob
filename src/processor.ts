@@ -17,7 +17,7 @@ import type * as t from "@types";
 export async function processBlobOption(args: t.ProcessorArgs): Promise<t.ProcessorReturn> {
    const { contents, option } = args;
 
-   const dcmpOptDigest = archive.digestDecompressOptions(option.decompress);
+   const dcmpOptDigest = archive.digestDecompressionOptions(option.decompress);
    const blobOptDigest = utils.digestRemoteBlobOption(option);
    const newDetails = utils.getDestDetails(option);
    const newEntry: t.HistoryFileEntry = {

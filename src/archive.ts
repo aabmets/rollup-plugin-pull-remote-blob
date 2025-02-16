@@ -13,20 +13,18 @@ import fsp from "node:fs/promises";
 import path from "node:path";
 import type * as t from "@types";
 import decompress from "decompress";
-import type { DecompressOptions, File } from "decompress";
+import type { File } from "decompress";
 import utils from "./utils.js";
 
-function digestDecompressOptions(options: undefined | boolean | DecompressOptions): string {
+function digestDecompressionOptions(options: undefined | boolean | t.DecompressionOptions): string {
    if (typeof options === "boolean") {
       return utils.digestData(options);
    } else if (!options) {
       return "";
    }
    return utils.digestData([
-      (options?.map || "").toString(),
-      (options?.filter || "").toString(),
-      (options?.strip || "").toString(),
-      (options?.plugins || []).map((plg) => plg.toString()).join(),
+      (options?.filter || "no-filter").toString(),
+      (options?.strip || "no-strip").toString(),
    ]);
 }
 
@@ -72,18 +70,33 @@ async function removeAllDecompressedFiles(entry: t.HistoryFileEntry): Promise<vo
    );
 }
 
-async function decompressArchive(
-   option: t.RemoteBlobOption,
-   dest: t.DestDetails,
-): Promise<string[]> {
-   const dcmpOpt = typeof option.decompress === "object" ? option.decompress : {};
-   const files: File[] = await decompress(dest.filePath, dest.dirPath, dcmpOpt);
-   await fsp.unlink(dest.filePath).catch(() => null);
+async function decompressArchive(args: t.ProcessorReturn): Promise<string[]> {
+   const { option, details } = args;
+   let opts = {};
+   if (typeof option.decompress === "object") {
+      const patternsArray = option.decompress.filter || [];
+      const filterFunc = (file: File) => {
+         for (const pattern of patternsArray) {
+            const regex = new RegExp(pattern);
+            const result = regex.test(file.path);
+            if (result) {
+               return true;
+            }
+         }
+         return false;
+      };
+      opts = {
+         strip: option.decompress.strip,
+         filter: patternsArray.length > 0 ? filterFunc : undefined,
+      };
+   }
+   const files: File[] = await decompress(details.filePath, details.dirPath, opts);
+   await fsp.unlink(details.filePath).catch(() => null);
    return files.map((file) => file.path);
 }
 
 export default {
-   digestDecompressOptions,
+   digestDecompressionOptions,
    allDecompressedFilesExist,
    removeAllDecompressedFiles,
    decompressArchive,

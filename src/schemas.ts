@@ -10,26 +10,12 @@
  */
 
 import path from "node:path";
-import {
-   any,
-   array,
-   boolean,
-   func,
-   min,
-   number,
-   object,
-   optional,
-   refine,
-   string,
-   union,
-} from "superstruct";
+import { array, boolean, min, number, object, optional, refine, string, union } from "superstruct";
 import validator from "validator";
 import utils from "./utils";
 
 const DecompressOptionsStruct = object({
-   filter: optional(func()),
-   map: optional(func()),
-   plugins: optional(array(any())),
+   filter: optional(array(string())),
    strip: optional(min(number(), 0)),
 });
 
@@ -39,10 +25,10 @@ const RemoteBlobOptionStruct = object({
       return validator.isURL(`${value}`) || errMsg;
    }),
    dest: string(),
+   sizeBytes: optional(number()),
    prettyName: optional(string()),
    alwaysPull: optional(boolean()),
    decompress: optional(union([boolean(), DecompressOptionsStruct])),
-   sizeBytes: optional(union([number(), func()])),
 });
 
 export const PluginConfigStruct = object({

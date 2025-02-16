@@ -10,7 +10,6 @@
  */
 
 import type cp from "cli-progress";
-import type { DecompressOptions } from "decompress";
 
 export interface UrlDest {
    url: string;
@@ -18,13 +17,18 @@ export interface UrlDest {
    [key: string]: any;
 }
 
+export interface DecompressionOptions {
+   filter?: string[];
+   strip?: number;
+}
+
 export interface RemoteBlobOption {
    url: string;
    dest: string;
+   sizeBytes?: number;
    prettyName?: string;
    alwaysPull?: boolean;
-   decompress?: boolean | DecompressOptions;
-   sizeBytes?: number | (() => Promise<number>);
+   decompress?: boolean | DecompressionOptions;
 }
 
 export interface PluginConfig {
@@ -71,7 +75,18 @@ export interface DownloaderArgs {
 }
 
 export interface ProgressBarMap {
-   [key: string]: cp.SingleBar;
+   [key: string]: {
+      bar: cp.SingleBar;
+   };
 }
 
-export type ProgressBarsReturn = [cp.MultiBar | null, ProgressBarMap];
+export interface ProgressBarsReturn {
+   multiBar: cp.MultiBar;
+   progBarMap: ProgressBarMap;
+}
+
+export interface WorkerData {
+   url: string;
+   details: DestDetails;
+   showProgress: boolean;
+}
