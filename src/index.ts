@@ -24,9 +24,10 @@ async function pluginMain(config: t.PluginConfig): Promise<void> {
       return processBlobOption({ contents, option });
    });
    const procRetArray: t.ProcessorReturn[] = await Promise.all(promises);
-   await downloadFiles({ config, procRetArray });
+   const mustDownload = procRetArray.filter((procRet) => !procRet.skipDownload);
+   await downloadFiles({ config, mustDownload });
 
-   const entries: t.HistoryFileEntry[] = procRetArray.map((procRet) => procRet.entry);
+   const entries = procRetArray.map((procRet) => procRet.entry);
    utils.writeHistoryFile(entries);
 }
 

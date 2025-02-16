@@ -67,7 +67,7 @@ export interface ProcessorReturn {
 
 export interface DownloaderArgs {
    config: PluginConfig;
-   procRetArray: ProcessorReturn[];
+   mustDownload: ProcessorReturn[];
 }
 
 export interface ProgressBarMap {
