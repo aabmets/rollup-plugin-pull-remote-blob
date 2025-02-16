@@ -13,7 +13,7 @@ import fsp from "node:fs/promises";
 import path from "node:path";
 import type * as t from "@types";
 import decompress from "decompress";
-import type { File } from "decompress";
+import type { DecompressOptions, File } from "decompress";
 import utils from "./utils.js";
 
 function digestDecompressionOptions(options: undefined | boolean | t.DecompressionOptions): string {
@@ -70,25 +70,19 @@ async function removeAllDecompressedFiles(entry: t.HistoryFileEntry): Promise<vo
    );
 }
 
-async function decompressArchive(args: t.ProcessorReturn): Promise<string[]> {
+async function decompressArchive(args: t.WorkerData): Promise<string[]> {
    const { option, details } = args;
-   let opts = {};
+   const opts: Partial<DecompressOptions> = {};
    if (typeof option.decompress === "object") {
-      const patternsArray = option.decompress.filter || [];
-      const filterFunc = (file: File) => {
-         for (const pattern of patternsArray) {
-            const regex = new RegExp(pattern);
-            const result = regex.test(file.path);
-            if (result) {
-               return true;
-            }
-         }
-         return false;
-      };
-      opts = {
-         strip: option.decompress.strip,
-         filter: patternsArray.length > 0 ? filterFunc : undefined,
-      };
+      opts.strip = option.decompress.strip;
+      const filterPatterns = option.decompress.filter || [];
+      if (filterPatterns.length > 0) {
+         opts.filter = (file: File) => {
+            return filterPatterns.some((pattern) => {
+               return new RegExp(pattern).test(file.path);
+            });
+         };
+      }
    }
    const files: File[] = await decompress(details.filePath, details.dirPath, opts);
    await fsp.unlink(details.filePath).catch(() => null);
