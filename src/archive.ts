@@ -47,9 +47,9 @@ async function removeAllDecompressedFiles(entry: t.HistoryFileEntry): Promise<vo
    if (filesList.length === 0) {
       return;
    }
-   const dest = utils.getDestDetails(entry as t.RemoteBlobOption);
+   const details = utils.getDestDetails(entry);
    const fullFilePathsArray = filesList.map((partialFilePath) => {
-      return path.join(dest.dirPath, partialFilePath);
+      return path.join(details.dirPath, partialFilePath);
    });
    const dirPathsArray = fullFilePathsArray.map((fullFilePath) => {
       return path.dirname(fullFilePath);
