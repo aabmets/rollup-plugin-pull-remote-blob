@@ -29,28 +29,38 @@ export async function processBlobOption(args: t.ProcessorArgs): Promise<t.Proces
          filesList: [],
       },
    };
-   const mustDownload = { option, entry: newEntry, skipDownload: false };
+   const mustDownload = {
+      option,
+      entry: newEntry,
+      details: newDetails,
+      skipDownload: false,
+   };
 
-   if (!option.alwaysPull) {
-      if (!(blobOptDigest in contents)) {
-         return mustDownload;
-      }
+   if (blobOptDigest in contents) {
       const oldEntry = contents[blobOptDigest];
-      const skipDownload = { option, entry: oldEntry, skipDownload: true };
-
+      const oldDetails = utils.getDestDetails(oldEntry);
+      const skipDownload = {
+         option,
+         entry: oldEntry,
+         details: oldDetails,
+         skipDownload: true,
+      };
       if (newDetails.fileExists && oldEntry.blobOptionsDigest === newEntry.blobOptionsDigest) {
-         return skipDownload;
+         if (!option.alwaysPull) {
+            return skipDownload;
+         }
       }
       if (oldEntry.decompression.filesList.length > 0) {
          const allExist = await archive.allDecompressedFilesExist(oldEntry);
          if (allExist && dcmpOptDigest === oldEntry.decompression.optionsDigest) {
-            return skipDownload;
+            if (!option.alwaysPull) {
+               return skipDownload;
+            }
          } else {
             await archive.removeAllDecompressedFiles(oldEntry);
             return mustDownload;
          }
       }
-      const oldDetails = utils.getDestDetails(oldEntry);
       if (oldDetails.fileExists) {
          await fsp.unlink(oldDetails.filePath);
          return mustDownload;

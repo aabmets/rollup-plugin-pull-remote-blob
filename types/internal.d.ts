@@ -1,3 +1,15 @@
+/*
+ *   MIT License
+ *
+ *   Copyright (c) 2024, Mattias Aabmets
+ *
+ *   The contents of this file are subject to the terms and conditions defined in the License.
+ *   You may not use, modify, or distribute this file except in compliance with the License.
+ *
+ *   SPDX-License-Identifier: MIT
+ */
+
+import type cp from "cli-progress";
 import type { DecompressOptions } from "decompress";
 
 export interface UrlDest {
@@ -49,6 +61,7 @@ export interface ProcessorArgs {
 export interface ProcessorReturn {
    option: RemoteBlobOption;
    entry: HistoryFileEntry;
+   details: DestDetails;
    skipDownload: boolean;
 }
 
@@ -56,3 +69,9 @@ export interface DownloaderArgs {
    config: PluginConfig;
    procRetArray: ProcessorReturn[];
 }
+
+export interface ProgressBarMap {
+   [key: string]: cp.SingleBar;
+}
+
+export type ProgressBarsReturn = [cp.MultiBar | null, ProgressBarMap];
