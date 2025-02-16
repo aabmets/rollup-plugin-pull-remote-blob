@@ -49,14 +49,15 @@ export interface HistoryFileContents {
 export interface ProcessorArgs {
    contents: HistoryFileContents;
    option: RemoteBlobOption;
-   index: number;
 }
 
-export type ProcessorReturn = [HistoryFileEntry, RemoteBlobOption | null];
-
-export type MustDownload = [HistoryFileEntry, RemoteBlobOption];
+export interface ProcessorReturn {
+   option: RemoteBlobOption;
+   entry: HistoryFileEntry;
+   skipDownload: boolean;
+}
 
 export interface DownloaderArgs {
    config: PluginConfig;
-   mustDownload: MustDownload[];
+   procRetArray: ProcessorReturn[];
 }

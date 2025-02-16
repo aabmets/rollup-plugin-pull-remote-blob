@@ -20,15 +20,13 @@ import utils from "./utils.js";
 
 async function pluginMain(config: t.PluginConfig): Promise<void> {
    const contents: t.HistoryFileContents = utils.readHistoryFile();
-   const promises = config.blobs.map((option: t.RemoteBlobOption, index: number) => {
-      return processBlobOption({ contents, option, index });
+   const promises = config.blobs.map((option: t.RemoteBlobOption) => {
+      return processBlobOption({ contents, option });
    });
-   const results: t.ProcessorReturn[] = await Promise.all(promises);
+   const procRetArray: t.ProcessorReturn[] = await Promise.all(promises);
+   await downloadFiles({ config, procRetArray });
 
-   const mustDownload = results.filter((res) => !!res[1]) as t.MustDownload[];
-   await downloadFiles({ config, mustDownload });
-
-   const entries: t.HistoryFileEntry[] = results.map((res) => res[0]);
+   const entries: t.HistoryFileEntry[] = procRetArray.map((procRet) => procRet.entry);
    utils.writeHistoryFile(entries);
 }
 
