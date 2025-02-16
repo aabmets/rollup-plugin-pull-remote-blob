@@ -18,7 +18,7 @@ export async function processBlobOption(args: t.ProcessorArgs): Promise<t.Proces
    const { contents, option } = args;
 
    const dcmpOptDigest = archive.digestDecompressOptions(option.decompress);
-   const blobOptDigest = utils.digestData([option.url, option.dest]);
+   const blobOptDigest = utils.digestRemoteBlobOption(option);
    const newDetails = utils.getDestDetails(option);
    const newEntry: t.HistoryFileEntry = {
       url: option.url,

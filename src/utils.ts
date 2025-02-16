@@ -30,6 +30,10 @@ function digestData(data: unknown): string {
    return digest.substring(0, 64);
 }
 
+function digestRemoteBlobOption(option: Partial<t.RemoteBlobOption>): string {
+   return digestData([option.url, option.dest]);
+}
+
 function getDestDetails(option: t.RemoteBlobOption): t.DestDetails {
    const destPath = path.resolve(option.dest);
    const isFile = path.extname(destPath) !== "";
@@ -68,6 +72,7 @@ function writeHistoryFile(entries: t.HistoryFileEntry[]): void {
 export default {
    sortPathsByDepth,
    digestData,
+   digestRemoteBlobOption,
    getDestDetails,
    readHistoryFile,
    writeHistoryFile,

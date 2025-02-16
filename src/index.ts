@@ -15,7 +15,7 @@ import { assert } from "superstruct";
 import { defaultPluginConfig } from "./constants.js";
 import { downloadFiles } from "./downloader.js";
 import { processBlobOption } from "./processor.js";
-import schemas from "./schemas.js";
+import { PluginConfigValidator } from "./schemas.js";
 import utils from "./utils.js";
 
 async function pluginMain(config: t.PluginConfig): Promise<void> {
@@ -31,7 +31,7 @@ async function pluginMain(config: t.PluginConfig): Promise<void> {
 }
 
 export function pullRemoteBlobPlugin(config?: t.PluginConfig): Plugin {
-   assert(config, schemas.PluginConfigStruct);
+   assert(config, PluginConfigValidator);
    return {
       name: "pull-remote-blob",
       buildStart: async () => {

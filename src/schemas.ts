@@ -23,6 +23,7 @@ import {
    union,
 } from "superstruct";
 import validator from "validator";
+import utils from "./utils";
 
 const DecompressOptionsStruct = object({
    filter: optional(func()),
@@ -48,4 +49,17 @@ const PluginConfigStruct = object({
    showProgress: optional(boolean()),
 });
 
-export default { PluginConfigStruct };
+export const PluginConfigValidator = refine(PluginConfigStruct, "duplicates", (config) => {
+   const rboDigests: string[] = [];
+   for (const option of config.blobs) {
+      const digest = utils.digestRemoteBlobOption({
+         url: option.url,
+         dest: option.dest,
+      });
+      if (rboDigests.includes(digest)) {
+         return `Duplicate entry: ${option.url} -> ${option.dest}`;
+      }
+      rboDigests.push(digest);
+   }
+   return true;
+});
