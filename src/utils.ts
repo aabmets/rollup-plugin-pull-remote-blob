@@ -23,9 +23,10 @@ function sortPathsByDepth(paths: string[], sep = path.sep) {
    });
 }
 
-function digestString(data: string): string {
+function digestData(data: unknown): string {
+   const hashInput = JSON.stringify(data) || "";
    const hash = crypto.createHash("sha256");
-   const digest = hash.update(data).digest("hex");
+   const digest = hash.update(hashInput).digest("hex");
    return digest.substring(0, 64);
 }
 
@@ -66,7 +67,7 @@ function writeHistoryFile(entries: t.HistoryFileEntry[]): void {
 
 export default {
    sortPathsByDepth,
-   digestString,
+   digestData,
    getDestDetails,
    readHistoryFile,
    writeHistoryFile,
