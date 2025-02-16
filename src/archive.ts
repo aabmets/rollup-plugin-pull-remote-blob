@@ -16,38 +16,18 @@ import decompress from "decompress";
 import type { DecompressOptions, File } from "decompress";
 import utils from "./utils.js";
 
-function digestRemoteBlobOption(
-   option: t.RemoteBlobOption,
-   dcmpOptDigest: string,
-   index: number,
-): string {
-   return utils.digestString(
-      [
-         option.url,
-         option.dest,
-         option.prettyName,
-         !!option.alwaysPull,
-         (option.sizeBytes || "").toString(),
-         dcmpOptDigest,
-         index,
-      ].join(),
-   );
-}
-
 function digestDecompressOptions(options: undefined | boolean | DecompressOptions): string {
    if (typeof options === "boolean") {
-      return utils.digestString(options.toString());
+      return utils.digestData(options);
    } else if (!options) {
       return "";
    }
-   return utils.digestString(
-      [
-         (options?.map || "").toString(),
-         (options?.filter || "").toString(),
-         (options?.strip || "").toString(),
-         (options?.plugins || []).map((plg) => plg.toString()).join(),
-      ].join(),
-   );
+   return utils.digestData([
+      (options?.map || "").toString(),
+      (options?.filter || "").toString(),
+      (options?.strip || "").toString(),
+      (options?.plugins || []).map((plg) => plg.toString()).join(),
+   ]);
 }
 
 async function allDecompressedFilesExist(entry: t.HistoryFileEntry): Promise<boolean> {
@@ -103,7 +83,6 @@ async function decompressArchive(
 }
 
 export default {
-   digestRemoteBlobOption,
    digestDecompressOptions,
    allDecompressedFilesExist,
    removeAllDecompressedFiles,
