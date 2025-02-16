@@ -23,13 +23,13 @@
       "pubnow": "biome check --error-on-warnings && tsc -p tsconfig.json && bun publish"
    },
    "dependencies": {
-      "@types/cli-progress": "^3.11.6",
+      "@types/cli-progress": ">=3.0.0",
       "@types/decompress": ">=4.0.0",
       "@types/validator": ">=13.0.0",
       "ansi-colors": ">=4.0.0",
       "axios": ">=1.6.0",
       "chalk": ">=5.0.0",
-      "cli-progress": "^3.12.0",
+      "cli-progress": ">=3.0.0",
       "decompress": ">=4.0.0",
       "superstruct": ">=2.0.0",
       "validator": ">=13.0.0"
