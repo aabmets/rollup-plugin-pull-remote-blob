@@ -14,7 +14,7 @@ import { array, boolean, min, number, object, optional, refine, string, union } 
 import validator from "validator";
 import utils from "./utils";
 
-const DecompressOptionsStruct = object({
+const DecompressionOptionsStruct = object({
    filter: optional(array(string())),
    strip: optional(min(number(), 0)),
 });
@@ -28,7 +28,7 @@ const RemoteBlobOptionStruct = object({
    sizeBytes: optional(number()),
    prettyName: optional(string()),
    alwaysPull: optional(boolean()),
-   decompress: optional(union([boolean(), DecompressOptionsStruct])),
+   decompress: optional(union([boolean(), DecompressionOptionsStruct])),
 });
 
 export const PluginConfigStruct = object({
