@@ -12,6 +12,7 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import url from "node:url";
 import type * as t from "@types";
 import * as c from "./constants.js";
 
@@ -66,6 +67,11 @@ function writeHistoryFile(entries: t.HistoryFileEntry[]): void {
    fs.writeFileSync(c.historyFilePath, JSON.stringify(data, null, 2));
 }
 
+function getWorkerFilePath(): string {
+   const thisFilePath = url.fileURLToPath(import.meta.url);
+   return path.join(path.dirname(thisFilePath), "worker.js");
+}
+
 export default {
    sortPathsByDepth,
    digestData,
@@ -73,4 +79,5 @@ export default {
    getDestDetails,
    readHistoryFile,
    writeHistoryFile,
+   getWorkerFilePath,
 };
