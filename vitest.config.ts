@@ -14,7 +14,8 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
    test: {
-      include: ["vitests/**/*"],
+      globalSetup: "./vitest/global_setup.ts",
+      include: ["vitest/tests/**/*"],
       server: {
          deps: {
             external: ["typescript"],
