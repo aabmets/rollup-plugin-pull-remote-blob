@@ -16,6 +16,23 @@ import url from "node:url";
 import type * as t from "@types";
 import * as c from "./constants.js";
 
+export function searchUpwards(forPath: string, startFrom = import.meta.url): string {
+   const startPath = startFrom.startsWith("file://") ? url.fileURLToPath(startFrom) : startFrom;
+   let currentDir = path.dirname(startPath);
+   while (true) {
+      const possiblePath = path.resolve(currentDir, forPath);
+      if (fs.existsSync(possiblePath)) {
+         return possiblePath;
+      }
+      const parentDir = path.dirname(currentDir);
+      if (parentDir === currentDir) {
+         break;
+      }
+      currentDir = parentDir;
+   }
+   throw new Error(`Could not find path: '${forPath}'`);
+}
+
 function sortPathsByDepth(paths: string[], sep = path.sep) {
    return paths.sort((a: string, b: string) => {
       const depthA = a.split(sep).length;
@@ -67,17 +84,12 @@ function writeHistoryFile(entries: t.HistoryFileEntry[]): void {
    fs.writeFileSync(c.historyFilePath, JSON.stringify(data, null, 2));
 }
 
-function getWorkerFilePath(): string {
-   const thisFilePath = url.fileURLToPath(import.meta.url);
-   return path.join(path.dirname(thisFilePath), "worker.js");
-}
-
 export default {
+   searchUpwards,
    sortPathsByDepth,
    digestData,
    digestRemoteBlobOption,
    getDestDetails,
    readHistoryFile,
    writeHistoryFile,
-   getWorkerFilePath,
 };
