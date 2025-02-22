@@ -89,3 +89,9 @@ export interface WorkerData {
    option: RemoteBlobOption;
    details: DestDetails;
 }
+
+export type WorkerMessage =
+   | { type: "progress"; bytes: number }
+   | { type: "error"; error: string }
+   | { type: "done"; filesList: string[] }
+   | { type: "decompressing" };
