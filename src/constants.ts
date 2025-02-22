@@ -13,6 +13,8 @@ import path from "node:path";
 import url from "node:url";
 import type * as t from "@types";
 
+export const workerFilePath = "dist/worker.js";
+
 export const historyFileName = "historical_entries.json";
 
 export const historyFilePath: string = (() => {
