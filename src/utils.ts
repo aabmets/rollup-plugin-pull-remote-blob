@@ -60,7 +60,7 @@ function getDestDetails(data: t.UrlDest): t.DestDetails {
    const filePath = path.join(dirPath, fileName);
    const fileExists = fs.existsSync(filePath);
    const dirExists = fs.existsSync(dirPath);
-   return { fileExists, filePath, dirExists, dirPath };
+   return { fileName, fileExists, filePath, dirExists, dirPath };
 }
 
 function readHistoryFile(): t.HistoryFileContents {
