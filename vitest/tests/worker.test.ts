@@ -15,20 +15,25 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { Worker } from "node:worker_threads";
 import * as c from "@src/constants";
+import * as s from "@src/schemas";
 import utils from "@src/utils";
 import type * as t from "@types";
+import { assert } from "superstruct";
 import { describe, expect, test } from "vitest";
 
 describe("worker", () => {
    test("download file", async () => {
       const option: t.RemoteBlobOption = {
          url: "https://github.com/aabmets/rollup-plugin-pull-remote-blob/archive/refs/heads/main.zip",
-         dest: path.join(tmpdir(), "vitest", crypto.randomBytes(8).toString("hex"), "main.zip"),
+         dest: path.join(tmpdir(), "vitest", crypto.randomBytes(8).toString("hex")),
          decompress: {
             filter: ["README.md", "src"],
             strip: 1,
          },
       };
+      const config = { blobs: [option] };
+      assert(config, s.PluginConfigStruct);
+
       let details = utils.getDestDetails(option);
       expect(details.fileExists).toEqual(false);
       expect(details.dirExists).toEqual(false);
