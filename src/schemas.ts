@@ -14,12 +14,12 @@ import { array, boolean, min, number, object, optional, refine, string, union } 
 import validator from "validator";
 import utils from "./utils";
 
-const DecompressionOptionsStruct = object({
+export const DecompressionOptionsStruct = object({
    filter: optional(array(string())),
    strip: optional(min(number(), 0)),
 });
 
-const RemoteBlobOptionStruct = object({
+export const RemoteBlobOptionStruct = object({
    url: refine(string(), "url", (value: string) => {
       const errMsg = `URL does not pass regex pattern validation: ${value}`;
       return validator.isURL(`${value}`) || errMsg;
