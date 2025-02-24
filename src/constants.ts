@@ -13,6 +13,14 @@ import path from "node:path";
 import url from "node:url";
 import type * as t from "@types";
 
+export const hilbertSpinnerCrawlers = 7;
+
+export const fileNameMinDisplayLength = 5;
+
+export const fileNameMaxDisplayLength = 25;
+
+export const progressBarWidth = 40;
+
 export const workerFilePath = "dist/worker.js";
 
 export const historyFileName = "historical_entries.json";
