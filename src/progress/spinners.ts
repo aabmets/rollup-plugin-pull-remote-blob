@@ -9,17 +9,9 @@
  *   SPDX-License-Identifier: MIT
  */
 
-/**
- * A generator function that produces animated Hilbert-style spinner frames.
- *
- * @param barWidth - The width of the spinner bar.
- * @param numCrawlers - The number of moving elements within the spinner.
- * @yields - The next frame of the spinner animation as a string.
- */
-export function* hilbertSpinnerGenerator(
-   barWidth = 40,
-   numCrawlers = 7,
-): Generator<string, void, void> {
+import * as c from "../constants.js";
+
+export function* wormSpinnerGenerator(): Generator<string, void, void> {
    const charSet1 = [
       "\u2801",
       "\u2809",
@@ -46,7 +38,10 @@ export function* hilbertSpinnerGenerator(
       "\u2809",
       "\u2808",
    ];
+   const barWidth = c.progressBarWidth;
+   const numCrawlers = c.downloadSpinnerCrawlers;
    let progress = 0;
+
    while (true) {
       // Each cell takes 8 steps to go through (plus 3 for trailing).
       const cycle = 8 * Math.floor(barWidth / numCrawlers);
