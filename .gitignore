@@ -31,4 +31,4 @@ coverage
 .idea/httpRequests
 
 # Plugin history file
-src/historical_entries.json
+src/userData/historical_entries.json
