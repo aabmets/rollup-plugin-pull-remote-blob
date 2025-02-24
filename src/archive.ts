@@ -34,7 +34,10 @@ async function allDecompressedFilesExist(entry: t.HistoryFileEntry): Promise<boo
    const results = await Promise.all(
       filesList.map(async (partialFilePath) => {
          const fullFilePath = path.join(details.dirPath, partialFilePath);
-         return await fsp.exists(fullFilePath).catch(() => false);
+         return await fsp
+            .access(fullFilePath)
+            .then(() => true)
+            .catch(() => false);
       }),
    );
    return results.every((value) => value === true);
