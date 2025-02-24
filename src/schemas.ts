@@ -12,7 +12,8 @@
 import path from "node:path";
 import { array, boolean, min, number, object, optional, refine, string, union } from "superstruct";
 import validator from "validator";
-import utils from "./utils";
+import * as c from "./constants.js";
+import utils from "./utils.js";
 
 export const DecompressionOptionsStruct = object({
    filter: optional(array(string())),
@@ -43,6 +44,15 @@ export const PluginConfigStruct = object({
          }
          if (path.extname(option.dest) !== "" && !!option.decompress) {
             return `Destination must be a directory when decompressing: '${option.dest}'`;
+         }
+         const prettyName = option.prettyName;
+         const minLen = c.fileNameMinDisplayLength;
+         const maxLen = c.fileNameMaxDisplayLength;
+         if (prettyName && prettyName.length < minLen) {
+            return `Pretty name '${prettyName}' must be at least ${minLen} characters long.`;
+         }
+         if (prettyName && prettyName.length > maxLen) {
+            return `Pretty name '${prettyName}' must not exceed ${maxLen} characters in length.`;
          }
       }
       return true;
