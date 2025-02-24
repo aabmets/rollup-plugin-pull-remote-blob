@@ -46,8 +46,8 @@ export const PluginConfigStruct = object({
             return `Destination must be a directory when decompressing: '${option.dest}'`;
          }
          const prettyName = option.prettyName;
-         const minLen = c.fileNameMinDisplayLength;
-         const maxLen = c.fileNameMaxDisplayLength;
+         const minLen = c.prettyNameMinLength;
+         const maxLen = c.prettyNameMaxLength;
          if (prettyName && prettyName.length < minLen) {
             return `Pretty name '${prettyName}' must be at least ${minLen} characters long.`;
          }

@@ -12,18 +12,25 @@
 import path from "node:path";
 import url from "node:url";
 import type * as t from "@types";
+import colors from "ansi-colors";
 
-export const hilbertSpinnerCrawlers = 7;
+export const simultaneousDownloads = 4;
 
-export const fileNameMinDisplayLength = 5;
+export const downloadSpinnerCrawlers = 6;
 
-export const fileNameMaxDisplayLength = 25;
+export const prettyNameMinLength = 5;
 
-export const progressBarWidth = 40;
+export const prettyNameMaxLength = 30;
+
+export const fileNameMinDisplayLength = 13;
+
+export const fileNameMaxDisplayLength = 30;
+
+export const progressBarWidth = 30;
 
 export const workerFilePath = "dist/worker.js";
 
-export const historyFileName = "historical_entries.json";
+export const historyFileName = "userData/historical_entries.json";
 
 export const historyFilePath: string = (() => {
    const filename = url.fileURLToPath(import.meta.url);
@@ -32,3 +39,30 @@ export const historyFilePath: string = (() => {
 })();
 
 export const defaultPluginConfig: t.PluginConfig = { blobs: [], showProgress: true };
+
+export const barStatus: t.BarStatusMap = {
+   waiting: {
+      text: "Waiting",
+      colorize: colors.yellow,
+   },
+   downloading: {
+      text: "Downloading",
+      colorize: colors.blue,
+   },
+   decompressing: {
+      text: "Decompressing",
+      colorize: colors.magenta,
+   },
+   done: {
+      text: "Done",
+      colorize: colors.green,
+   },
+   error: {
+      text: "Error",
+      colorize: colors.red,
+   },
+};
+
+export const maxBarStatusTextLength = Object.values(barStatus).reduce((max, barStatus) => {
+   return Math.max(max, barStatus.text.length);
+}, 0);
