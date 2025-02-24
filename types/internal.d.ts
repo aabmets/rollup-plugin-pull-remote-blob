@@ -10,6 +10,7 @@
  */
 
 import type cp from "cli-progress";
+import type { Plugin } from "rollup";
 
 export interface UrlDest {
    url: string;
@@ -36,7 +37,10 @@ export interface PluginConfig {
    showProgress?: boolean;
 }
 
+export type CustomPlugin = Plugin & { buildStart: () => Promise<void> };
+
 export interface DestDetails {
+   fileName: string;
    fileExists: boolean;
    filePath: string;
    dirExists: boolean;
@@ -74,17 +78,6 @@ export interface DownloaderArgs {
    mustDownload: ProcessorReturn[];
 }
 
-export interface ProgressBarMap {
-   [key: string]: {
-      bar: cp.SingleBar;
-   };
-}
-
-export interface ProgressBarsReturn {
-   multiBar: cp.MultiBar;
-   progBarMap: ProgressBarMap;
-}
-
 export interface WorkerData {
    option: RemoteBlobOption;
    details: DestDetails;
@@ -95,3 +88,39 @@ export type WorkerMessage =
    | { type: "error"; error: string }
    | { type: "done"; filesList: string[] }
    | { type: "decompressing" };
+
+export interface SingleBarArgs {
+   fileName: string;
+   sizeBytes: number | undefined;
+   multiBar: cp.MultiBar;
+}
+
+export interface BarController {
+   isActive: boolean;
+   setStatus: (status: any) => void;
+   increment: (amount: number) => void;
+   stop: () => void;
+   bar: cp.SingleBar;
+}
+
+export interface ProgressBarMap {
+   [key: string]: BarController;
+}
+
+export interface ProgressBarsReturn {
+   multiBar: cp.MultiBar;
+   progBarMap: ProgressBarMap;
+}
+
+export interface BarStatus {
+   text: string;
+   colorize: (text: string) => string;
+}
+
+export interface BarStatusMap {
+   waiting: BarStatus;
+   downloading: BarStatus;
+   decompressing: BarStatus;
+   done: BarStatus;
+   error: BarStatus;
+}

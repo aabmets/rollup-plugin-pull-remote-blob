@@ -10,7 +10,6 @@
  */
 
 import type * as t from "@types";
-import type { Plugin } from "rollup";
 import { assert } from "superstruct";
 import { defaultPluginConfig } from "./constants.js";
 import { downloadFiles } from "./downloader.js";
@@ -31,7 +30,7 @@ async function pluginMain(config: t.PluginConfig): Promise<void> {
    utils.writeHistoryFile(entries);
 }
 
-export function pullRemoteBlobPlugin(config?: t.PluginConfig): Plugin {
+export function pullRemoteBlobPlugin(config?: t.PluginConfig): t.CustomPlugin {
    assert(config, PluginConfigStruct);
    return {
       name: "pull-remote-blob",

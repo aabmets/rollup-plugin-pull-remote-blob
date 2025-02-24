@@ -9,10 +9,9 @@
  *   SPDX-License-Identifier: MIT
  */
 
-import type { Plugin } from "rollup";
-import type { DecompressionOptions, RemoteBlobOption } from "./internal.d.ts";
+import type { CustomPlugin, DecompressionOptions, PluginConfig } from "./internal.d.ts";
 
 declare module "rollup-plugin-pull-remote-blob" {
-   export function pullRemoteBlobPlugin(options?: RemoteBlobOption[]): Plugin;
-   export type { RemoteBlobOption, DecompressionOptions };
+   export function pullRemoteBlobPlugin(config?: PluginConfig): CustomPlugin;
+   export type { DecompressionOptions, PluginConfig, CustomPlugin };
 }
