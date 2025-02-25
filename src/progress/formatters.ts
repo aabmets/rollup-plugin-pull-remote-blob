@@ -32,8 +32,8 @@ export function formatFileName(mustDownload: t.ProcessorReturn[], index: number)
    fileName = fileName.padEnd(c.fileNameMinDisplayLength);
    fileName = fileName.padEnd(cfnLength);
    if (fileName.length > cfnLength) {
-      fileName = fileName.substring(0, cfnLength - 3);
-      fileName += "...";
+      fileName = fileName.substring(0, cfnLength - 1);
+      fileName += "…";
    }
    return `${index + 1})  ${fileName}`;
 }
