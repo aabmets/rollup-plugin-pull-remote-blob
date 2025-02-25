@@ -35,7 +35,9 @@ export function formatFileName(mustDownload: t.ProcessorReturn[], index: number)
       fileName = fileName.substring(0, cfnLength - 1);
       fileName += "…";
    }
-   return `${index + 1})  ${fileName}`;
+   const extraPadding = mustDownload.length >= 10 ? 2 : 1;
+   const fmtIndex = `${index + 1}`.padStart(extraPadding);
+   return `${fmtIndex}) ${fileName}`;
 }
 
 export function formatFileSize(bytes?: number): string {
@@ -78,9 +80,19 @@ export function formatStatus(status: t.BarStatus): string {
    return status.colorize(paddedText);
 }
 
+export function formatErrors(results: t.WorkerResult[]): string {
+   const messages: string[] = [];
+   results.forEach(({ fileName, errorMsg }) => {
+      const match = fileName.match(/\s?\S+\s/);
+      const msgPad = " ".repeat(match ? match[0].length : 0);
+      errorMsg ? messages.push(` ${fileName.trimEnd()}:\n ${msgPad}► ${errorMsg}`) : null;
+   });
+   return messages.join("\n");
+}
+
 export function getBarFormat(sizeBytes?: number): string {
-   const defaultBar = "{fileSize}  [{bar}\x1B[0m]  {percentage}%";
-   const unknownBar = "{fileSize}  [{bar}]  {unknownPct}%";
+   const defaultBar = "{fileSize} [{bar}\x1B[0m] {percentage}%";
+   const unknownBar = "{fileSize} [{bar}] {unknownPct}%";
    return [
       "│  {fileName}",
       sizeBytes ? defaultBar : unknownBar,
