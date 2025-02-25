@@ -12,6 +12,7 @@
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import wrk from "node:worker_threads";
+import type * as t from "@types";
 import axios from "axios";
 import archive from "./archive.js";
 
@@ -31,7 +32,7 @@ const Message = {
 };
 
 export async function downloadFile() {
-   const { option, details } = wrk.workerData;
+   const { option, details } = wrk.workerData as t.WorkerData;
    try {
       await fsp.mkdir(details.dirPath, { recursive: true });
       const fileStream = fs.createWriteStream(details.filePath);

@@ -84,6 +84,13 @@ export interface WorkerData {
    details: DestDetails;
 }
 
+export interface WorkerResult {
+   fileName: string;
+   errorMsg?: string;
+   details: DestDetails;
+   status: BarStatus;
+}
+
 export type WorkerMessage =
    | { type: "progress"; bytes: number }
    | { type: "error"; error: string }
@@ -93,15 +100,15 @@ export type WorkerMessage =
 export interface SingleBarArgs {
    fileName: string;
    sizeBytes: number | undefined;
+   showProgress?: boolean;
    multiBar: cp.MultiBar;
 }
 
 export interface BarController {
-   isActive: boolean;
+   fileName: string;
    setStatus: (status: any) => void;
    increment: (amount: number) => void;
    stop: () => void;
-   bar: cp.SingleBar;
 }
 
 export interface ProgressBarMap {
