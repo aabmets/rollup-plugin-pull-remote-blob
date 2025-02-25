@@ -35,6 +35,7 @@ export interface RemoteBlobOption {
 export interface PluginConfig {
    blobs: RemoteBlobOption[];
    showProgress?: boolean;
+   haltOnError?: boolean;
 }
 
 export type CustomPlugin = Plugin & { buildStart: () => Promise<void> };
@@ -123,4 +124,5 @@ export interface BarStatusMap {
    decompressing: BarStatus;
    done: BarStatus;
    error: BarStatus;
+   halted: BarStatus;
 }

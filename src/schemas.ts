@@ -58,4 +58,5 @@ export const PluginConfigStruct = object({
       return true;
    }),
    showProgress: optional(boolean()),
+   haltOnError: optional(boolean()),
 });

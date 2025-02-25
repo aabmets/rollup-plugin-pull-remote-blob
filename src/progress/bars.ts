@@ -22,7 +22,7 @@ export function getSingleBar(args: t.SingleBarArgs): t.BarController {
    const payload = {
       unknownPct: sizeBytes ? undefined : "  ?",
       fileSize: f.formatFileSize(sizeBytes),
-      status: f.formatStatus(c.barStatus.downloading),
+      status: f.formatStatus(c.barStatus.waiting),
       fileName,
    };
    const options: cp.Options = {

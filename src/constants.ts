@@ -12,9 +12,9 @@
 import path from "node:path";
 import url from "node:url";
 import type * as t from "@types";
-import colors from "ansi-colors";
+import ansis from "ansis";
 
-export const simultaneousDownloads = 4;
+export const parallelDownloads = 4;
 
 export const downloadSpinnerCrawlers = 6;
 
@@ -38,28 +38,36 @@ export const historyFilePath: string = (() => {
    return path.resolve(dirname, historyFileName);
 })();
 
-export const defaultPluginConfig: t.PluginConfig = { blobs: [], showProgress: true };
+export const defaultPluginConfig: t.PluginConfig = {
+   blobs: [],
+   showProgress: true,
+   haltOnError: true,
+};
 
 export const barStatus: t.BarStatusMap = {
    waiting: {
       text: "Waiting",
-      colorize: colors.yellow,
+      colorize: ansis.cyan,
    },
    downloading: {
       text: "Downloading",
-      colorize: colors.blue,
+      colorize: ansis.blue,
    },
    decompressing: {
       text: "Decompressing",
-      colorize: colors.magenta,
+      colorize: ansis.magenta,
    },
    done: {
       text: "Done",
-      colorize: colors.green,
+      colorize: ansis.green,
    },
    error: {
       text: "Error",
-      colorize: colors.red,
+      colorize: ansis.red,
+   },
+   halted: {
+      text: "Halted",
+      colorize: ansis.yellow,
    },
 };
 
