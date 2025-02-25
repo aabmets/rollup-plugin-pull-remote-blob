@@ -18,8 +18,9 @@
    },
    "files": ["dist", "types", "README.md", "LICENSE"],
    "scripts": {
-      "check": "tsc -p tsconfig.json --noEmit && biome check",
-      "pubtest": "tsc -p tsconfig.json && bun pm pack --destination ./packages",
+      "compile": "tsc -p tsconfig.json",
+      "check": "bun run compile --noEmit && biome check",
+      "pubtest": "bun run compile && bun pm pack --destination ./packages",
       "pubnow": "biome check --error-on-warnings && tsc -p tsconfig.json && bun publish"
    },
    "dependencies": {
