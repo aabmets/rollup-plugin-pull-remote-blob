@@ -15,17 +15,26 @@ import * as c from "../constants";
 import * as f from "./formatters.js";
 import * as tbl from "./table.js";
 
-export function getSingleBar(args: t.SingleBarArgs): t.BarController {
-   const { fileName, sizeBytes, multiBar } = args;
-   const total = sizeBytes ?? 0;
-   const start = sizeBytes ? 0 : -1;
-   const payload = {
+export function getDisabledController(fileName: string): t.BarController {
+   return {
+      fileName,
+      setStatus: () => null,
+      increment: () => null,
+      stop: () => null,
+   };
+}
+
+export function getBarPayload(fileName: string, sizeBytes?: number) {
+   return {
       unknownPct: sizeBytes ? undefined : "  ?",
       fileSize: f.formatFileSize(sizeBytes),
       status: f.formatStatus(c.barStatus.waiting),
       fileName,
    };
-   const options: cp.Options = {
+}
+
+export function getBarOptions(sizeBytes?: number): cp.Options {
+   return {
       format: f.getBarFormat(sizeBytes),
       formatBar: sizeBytes ? undefined : f.getWormSpinnerBarFormatter(),
       formatTime: (t: number, options: cp.Options, roundToMultipleOf: number) => {
@@ -34,10 +43,22 @@ export function getSingleBar(args: t.SingleBarArgs): t.BarController {
       },
       barGlue: sizeBytes ? "\x1B[90m" : undefined,
    };
-   const bar = multiBar.create(total, start, payload, options);
+}
+
+export function getBarController(args: t.SingleBarArgs): t.BarController {
+   const { fileName, sizeBytes, showProgress, multiBar } = args;
+   if (!showProgress) {
+      return getDisabledController(fileName);
+   }
+   const bar: cp.SingleBar = multiBar.create(
+      sizeBytes ?? 0,
+      sizeBytes ? 0 : -1,
+      getBarPayload(fileName, sizeBytes),
+      getBarOptions(sizeBytes),
+   );
    let unknownSizeBytes = 0;
    return {
-      isActive: bar.isActive,
+      fileName,
       setStatus: (status: t.BarStatus) => {
          bar.update({ status: f.formatStatus(status) });
       },
@@ -57,11 +78,11 @@ export function getSingleBar(args: t.SingleBarArgs): t.BarController {
          }
          bar.stop();
       },
-      bar,
    };
 }
 
-export function getProgressBars(mustDownload: t.ProcessorReturn[]): t.ProgressBarsReturn {
+export function getProgressBars(args: t.DownloaderArgs): t.ProgressBarsReturn {
+   const { config, mustDownload } = args;
    const progBarMap: t.ProgressBarMap = {};
    const multiBar = new cp.MultiBar({
       barsize: c.progressBarWidth,
@@ -72,20 +93,25 @@ export function getProgressBars(mustDownload: t.ProcessorReturn[]): t.ProgressBa
       hideCursor: true,
    });
 
-   const header = tbl.getTableHeader(mustDownload);
-   multiBar.create(0, 0, {}, { format: header });
+   if (config.showProgress) {
+      const header = tbl.getTableHeader(mustDownload);
+      multiBar.create(0, 0, {}, { format: header });
+   }
 
    mustDownload.forEach((procRet: t.ProcessorReturn, index: number) => {
       const { option, entry } = procRet;
-      progBarMap[entry.blobOptionsDigest] = getSingleBar({
+      progBarMap[entry.blobOptionsDigest] = getBarController({
          fileName: f.formatFileName(mustDownload, index),
          sizeBytes: option.sizeBytes,
+         showProgress: config.showProgress,
          multiBar,
       });
    });
 
-   const footer = tbl.getTableFooter(mustDownload);
-   multiBar.create(0, 0, {}, { format: footer });
+   if (config.showProgress) {
+      const footer = tbl.getTableFooter(mustDownload);
+      multiBar.create(0, 0, {}, { format: footer });
+   }
 
    return { multiBar, progBarMap };
 }
