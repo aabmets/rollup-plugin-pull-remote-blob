@@ -10,6 +10,7 @@
  */
 
 import type * as t from "@types";
+import ansis from "ansis";
 import type cp from "cli-progress";
 import * as c from "../constants.js";
 import utils from "../utils.js";
@@ -82,10 +83,13 @@ export function formatStatus(status: t.BarStatus): string {
 
 export function formatErrors(results: t.WorkerResult[]): string {
    const messages: string[] = [];
-   results.forEach(({ fileName, errorMsg }) => {
-      const match = fileName.match(/\s?\S+\s/);
-      const msgPad = " ".repeat(match ? match[0].length : 0);
-      errorMsg ? messages.push(` ${fileName.trimEnd()}:\n ${msgPad}► ${errorMsg}`) : null;
+   results.forEach(({ fileName, errorMsg, status }) => {
+      if (status === c.barStatus.error) {
+         const match = fileName.match(/\s?\S+\s/);
+         const msgPad = " ".repeat(match ? match[0].length : 0);
+         const errMsg = errorMsg ? errorMsg : ansis.italic("Unknown error");
+         messages.push(` ${fileName.trimEnd()}:\n ${msgPad}► ${errMsg}`);
+      }
    });
    return messages.join("\n");
 }
