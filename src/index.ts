@@ -12,6 +12,7 @@
 import type * as t from "@types";
 import { assert } from "superstruct";
 import { defaultPluginConfig } from "./constants.js";
+import { barStatus } from "./constants.js";
 import { downloadFiles } from "./downloader.js";
 import log from "./logger.js";
 import { processBlobOption } from "./processor.js";
@@ -34,7 +35,7 @@ async function pluginMain(config: t.PluginConfig): Promise<void> {
       log.downloadingRemoteBlobs();
       const results = await downloadFiles({ config, mustDownload });
 
-      if (results.some((res) => !!res.errorMsg)) {
+      if (results.some(({ status }) => status === barStatus.error)) {
          log.errorsDetected(results);
       } else {
          log.downloadCompleted();
