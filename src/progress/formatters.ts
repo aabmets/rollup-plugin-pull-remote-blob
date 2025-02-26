@@ -110,11 +110,17 @@ export function getBarFormat(sizeBytes?: number): string {
 export function getWormSpinnerBarFormatter(): cp.BarFormatter {
    const spinner = wormSpinnerGenerator();
    return (progress, options) => {
-      if (progress === 1) {
-         const char = options?.barCompleteChar || "";
-         const count = options?.barsize || 0;
-         return char.repeat(count);
+      const count = options?.barsize || c.progressBarWidth;
+      let char = "?";
+      if ([1, 2].includes(progress)) {
+         if (progress === 1) {
+            char = options?.barIncompleteChar || "—";
+            return ansis.fg(8)(char.repeat(count));
+         } else {
+            char = options?.barCompleteChar || "■";
+            return char.repeat(count);
+         }
       }
-      return spinner.next().value || "";
+      return spinner.next().value || char.repeat(count);
    };
 }

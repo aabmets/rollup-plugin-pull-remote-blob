@@ -57,9 +57,11 @@ export function getBarController(args: t.SingleBarArgs): t.BarController {
       getBarOptions(sizeBytes),
    );
    let unknownSizeBytes = 0;
+   let errorRaised = false;
    return {
       fileName,
       setStatus: (status: t.BarStatus) => {
+         errorRaised = status === c.barStatus.error;
          bar.update({ status: f.formatStatus(status) });
       },
       increment: (amount: number) => {
@@ -71,9 +73,9 @@ export function getBarController(args: t.SingleBarArgs): t.BarController {
       },
       stop: () => {
          if (!sizeBytes) {
-            bar.update(1, {
+            bar.update(errorRaised ? 1 : 2, {
                fileSize: f.formatFileSize(unknownSizeBytes),
-               unknownPct: 100,
+               unknownPct: errorRaised ? "  0" : 100,
             });
          }
          bar.stop();
