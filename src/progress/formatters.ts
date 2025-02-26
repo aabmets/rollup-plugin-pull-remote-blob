@@ -16,29 +16,34 @@ import * as c from "../constants.js";
 import utils from "../utils.js";
 import { wormSpinnerGenerator } from "./spinners.js";
 
+export function getFileName(procRet: t.ProcessorReturn, index: number): string {
+   const { option, details } = procRet;
+   const fileName = option.prettyName || details.fileName;
+   return `${index + 1}) ${fileName}`;
+}
+
 export const clampedFileNameLength = utils.memoize((mustDownload: t.ProcessorReturn[]): number => {
-   const longestLength = mustDownload.reduce((max, procRet) => {
-      const { option, details } = procRet;
-      const fileName = option.prettyName || details.fileName;
-      return Math.max(max, fileName.length);
+   const longestLength = mustDownload.reduce((value, procRet, index) => {
+      const fileName = getFileName(procRet, index);
+      return Math.max(value, fileName.length);
    }, 0);
    const lowerClamp = Math.max(longestLength, c.fileNameMinDisplayLength);
    return Math.min(lowerClamp, c.fileNameMaxDisplayLength);
 });
 
 export function formatFileName(mustDownload: t.ProcessorReturn[], index: number): string {
-   const { option, details } = mustDownload[index];
+   const procRet = mustDownload[index];
    const cfnLength = clampedFileNameLength(mustDownload);
-   let fileName = option.prettyName || details.fileName;
+   let fileName = getFileName(procRet, index);
    fileName = fileName.padEnd(c.fileNameMinDisplayLength);
-   fileName = fileName.padEnd(cfnLength);
-   if (fileName.length > cfnLength) {
+
+   if (fileName.length > c.fileNameMaxDisplayLength) {
       fileName = fileName.substring(0, cfnLength - 1);
       fileName += "…";
+   } else {
+      fileName = fileName.padEnd(cfnLength);
    }
-   const extraPadding = mustDownload.length >= 10 ? 2 : 1;
-   const fmtIndex = `${index + 1}`.padStart(extraPadding);
-   return `${fmtIndex}) ${fileName}`;
+   return fileName;
 }
 
 export function formatFileSize(bytes?: number): string {
@@ -88,7 +93,7 @@ export function formatErrors(results: t.WorkerResult[]): string {
          const match = fileName.match(/\s?\S+\s/);
          const msgPad = " ".repeat(match ? match[0].length : 0);
          const errMsg = errorMsg ? errorMsg : ansis.italic("Unknown error");
-         messages.push(` ${fileName.trimEnd()}:\n ${msgPad}► ${errMsg}`);
+         messages.push(` ${fileName.trimEnd()} error:\n ${msgPad}► ${errMsg}`);
       }
    });
    return messages.join("\n");
@@ -107,13 +112,13 @@ export function getBarFormat(sizeBytes?: number): string {
    ].join(`  ${bar}  `);
 }
 
-export function getWormSpinnerBarFormatter(): cp.BarFormatter {
+export function getWormSpinnerBarFormatter(error: t.Error): cp.BarFormatter {
    const spinner = wormSpinnerGenerator();
    return (progress, options) => {
       const count = options?.barsize || c.progressBarWidth;
       let char = "?";
-      if ([1, 2].includes(progress)) {
-         if (progress === 1) {
+      if (progress === 1) {
+         if (error.isRaised) {
             char = options?.barIncompleteChar || "—";
             return ansis.fg(8)(char.repeat(count));
          } else {

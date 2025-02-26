@@ -22,7 +22,7 @@ export const prettyNameMinLength = 5;
 
 export const prettyNameMaxLength = 30;
 
-export const fileNameMinDisplayLength = 13;
+export const fileNameMinDisplayLength = 17;
 
 export const fileNameMaxDisplayLength = 30;
 

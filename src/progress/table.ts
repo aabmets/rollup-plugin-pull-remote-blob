@@ -15,9 +15,8 @@ import * as f from "./formatters.js";
 
 function getLabels(mustDownload: t.ProcessorReturn[]): string[] {
    const cfnLength = f.clampedFileNameLength(mustDownload);
-   const extraPadding = mustDownload.length >= 10 ? 8 : 7;
    return [
-      "  Index – File name  ".padEnd(cfnLength + extraPadding),
+      `  ${"Index – File name".padEnd(cfnLength)}  `,
       "    File size – Progress bar – Percent complete     ",
       "      ETA  ",
       "  Elapsed  ",
