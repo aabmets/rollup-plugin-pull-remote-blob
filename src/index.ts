@@ -35,10 +35,13 @@ async function pluginMain(config: t.PluginConfig): Promise<void> {
       log.downloadingRemoteBlobs();
       const results = await downloadFiles({ config, mustDownload });
 
-      if (results.some(({ status }) => status === barStatus.error)) {
-         log.errorsDetected(results);
+      const errorPredicate = ({ status }: t.WorkerResult) => status === barStatus.error;
+      if (results.every(errorPredicate)) {
+         log.allDownloadsFailed(results);
+      } else if (results.some(errorPredicate)) {
+         log.someDownloadsFailed(results);
       } else {
-         log.downloadCompleted();
+         log.allDownloadsComplete();
       }
    } else {
       log.allFilesExist();

@@ -25,17 +25,24 @@ function allFilesExist(): void {
 }
 
 function downloadingRemoteBlobs(): void {
-   const msg = "\n Downloading remote blobs...";
+   const msg = "\n Downloading remote blobs…";
    console.info(ansis.blue.bold(msg));
 }
 
-function errorsDetected(results: t.WorkerResult[]): void {
-   console.error(" Plugin encountered errors while pulling remote blobs:");
+function allDownloadsFailed(results: t.WorkerResult[]): void {
+   const msg = " Failed to download all remote blobs:";
+   console.error(ansis.red.bold(msg));
    console.error(f.formatErrors(results));
 }
 
-function downloadCompleted(): void {
-   const msg = " Successfully completed remote blob downloads.\n";
+function someDownloadsFailed(results: t.WorkerResult[]): void {
+   const msg = " Failed to download some remote blobs:";
+   console.info(ansis.yellow.bold(msg));
+   console.error(f.formatErrors(results));
+}
+
+function allDownloadsComplete(): void {
+   const msg = " Successfully completed all remote blob downloads.\n";
    console.info(ansis.green.bold(msg));
 }
 
@@ -43,6 +50,7 @@ export default {
    nothingToDownload,
    allFilesExist,
    downloadingRemoteBlobs,
-   errorsDetected,
-   downloadCompleted,
+   allDownloadsFailed,
+   someDownloadsFailed,
+   allDownloadsComplete,
 };
