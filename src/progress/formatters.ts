@@ -112,18 +112,18 @@ export function getBarFormat(sizeBytes?: number): string {
    ].join(`  ${bar}  `);
 }
 
-export function getWormSpinnerBarFormatter(error: t.Error): cp.BarFormatter {
+export function getWormSpinnerBarFormatter(barStatus: t.BarStatus[]): cp.BarFormatter {
    const spinner = wormSpinnerGenerator();
    return (progress, options) => {
       const count = options?.barsize || c.progressBarWidth;
       let char = "?";
       if (progress === 1) {
-         if (error.isRaised) {
-            char = options?.barIncompleteChar || "—";
-            return ansis.fg(8)(char.repeat(count));
-         } else {
+         if (barStatus[0] === c.barStatus.done) {
             char = options?.barCompleteChar || "■";
             return char.repeat(count);
+         } else {
+            char = options?.barIncompleteChar || "—";
+            return ansis.fg(8)(char.repeat(count));
          }
       }
       return spinner.next().value || char.repeat(count);

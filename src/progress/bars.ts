@@ -15,15 +15,6 @@ import * as c from "../constants";
 import * as f from "./formatters.js";
 import * as tbl from "./table.js";
 
-export function getDisabledController(fileName: string): t.BarController {
-   return {
-      fileName,
-      setStatus: () => null,
-      increment: () => null,
-      stop: () => null,
-   };
-}
-
 export function getBarPayload(fileName: string, sizeBytes?: number) {
    return {
       unknownPct: sizeBytes ? undefined : "  ?",
@@ -33,10 +24,10 @@ export function getBarPayload(fileName: string, sizeBytes?: number) {
    };
 }
 
-export function getBarOptions(sizeBytes?: number): cp.Options {
+export function getBarOptions(barStatus: t.BarStatus[], sizeBytes?: number): cp.Options {
    return {
       format: f.getBarFormat(sizeBytes),
-      formatBar: sizeBytes ? undefined : f.getWormSpinnerBarFormatter(),
+      formatBar: sizeBytes ? undefined : f.getWormSpinnerBarFormatter(barStatus),
       formatTime: (t: number, options: cp.Options, roundToMultipleOf: number) => {
          const fmtTime = cp.Format.TimeFormat(t, options, roundToMultipleOf);
          return fmtTime.padStart(7, " ");
@@ -45,24 +36,23 @@ export function getBarOptions(sizeBytes?: number): cp.Options {
    };
 }
 
-export function getBarController(args: t.SingleBarArgs): t.BarController {
-   const { fileName, sizeBytes, showProgress, multiBar } = args;
-   if (!showProgress) {
-      return getDisabledController(fileName);
-   }
+export function getController(args: t.ControllerArgs): t.BarController {
+   const { fileName, sizeBytes, multiBar } = args;
+   const barStatus: t.BarStatus[] = [c.barStatus.waiting];
+   let unknownSizeBytes = 0;
+
    const bar: cp.SingleBar = multiBar.create(
       sizeBytes ?? 0,
       sizeBytes ? 0 : -1,
       getBarPayload(fileName, sizeBytes),
-      getBarOptions(sizeBytes),
+      getBarOptions(barStatus, sizeBytes),
    );
-   let unknownSizeBytes = 0;
-   let errorRaised = false;
    return {
       fileName,
+      isError: () => barStatus[0] === c.barStatus.error,
       setStatus: (status: t.BarStatus) => {
-         errorRaised = status === c.barStatus.error;
          bar.update({ status: f.formatStatus(status) });
+         barStatus[0] = status;
       },
       increment: (amount: number) => {
          if (sizeBytes) {
@@ -73,18 +63,28 @@ export function getBarController(args: t.SingleBarArgs): t.BarController {
       },
       stop: () => {
          if (!sizeBytes) {
-            bar.update(errorRaised ? 1 : 2, {
-               fileSize: f.formatFileSize(unknownSizeBytes),
-               unknownPct: errorRaised ? "  0" : 100,
-            });
+            const unknownPct = barStatus[0] === c.barStatus.done ? 100 : "  0";
+            const fileSize = f.formatFileSize(unknownSizeBytes);
+            bar.update(1, { fileSize, unknownPct });
          }
          bar.stop();
       },
    };
 }
 
+export function getDisabledController({ fileName }: t.ControllerArgs): t.BarController {
+   return {
+      fileName,
+      isError: () => false,
+      setStatus: () => null,
+      increment: () => null,
+      stop: () => null,
+   };
+}
+
 export function getProgressBars(args: t.DownloaderArgs): t.ProgressBarsReturn {
    const { config, mustDownload } = args;
+
    const progBarMap: t.ProgressBarMap = {};
    const multiBar = new cp.MultiBar({
       barsize: c.progressBarWidth,
@@ -102,12 +102,15 @@ export function getProgressBars(args: t.DownloaderArgs): t.ProgressBarsReturn {
 
    mustDownload.forEach((procRet: t.ProcessorReturn, index: number) => {
       const { option, entry } = procRet;
-      progBarMap[entry.blobOptionsDigest] = getBarController({
-         fileName: f.formatFileName(mustDownload, index),
+      const fileName = f.formatFileName(mustDownload, index);
+      const args: t.ControllerArgs = {
          sizeBytes: option.sizeBytes,
-         showProgress: config.showProgress,
+         fileName,
          multiBar,
-      });
+      };
+      progBarMap[entry.blobOptionsDigest] = config.showProgress
+         ? getController(args)
+         : getDisabledController(args);
    });
 
    if (config.showProgress) {
