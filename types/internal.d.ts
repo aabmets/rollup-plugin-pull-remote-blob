@@ -72,6 +72,7 @@ export interface ProcessorReturn {
    entry: HistoryFileEntry;
    details: DestDetails;
    skipDownload: boolean;
+   errorMsg?: string;
 }
 
 export interface DownloaderArgs {
@@ -97,7 +98,7 @@ export type WorkerMessage =
    | { type: "done"; filesList: string[] }
    | { type: "decompressing" };
 
-export interface SingleBarArgs {
+export interface ControllerArgs {
    fileName: string;
    sizeBytes: number | undefined;
    showProgress?: boolean;
@@ -106,6 +107,7 @@ export interface SingleBarArgs {
 
 export interface BarController {
    fileName: string;
+   isError: () => boolean;
    setStatus: (status: any) => void;
    increment: (amount: number) => void;
    stop: () => void;
@@ -133,3 +135,16 @@ export interface BarStatusMap {
    error: BarStatus;
    halted: BarStatus;
 }
+
+export type Error = { isRaised: boolean };
+
+export interface WorkerRunnerArgs {
+   config: PluginConfig;
+   procRet: ProcessorReturn;
+   progBarMap: ProgressBarMap;
+   error: Error;
+}
+
+export type Condition = (errorMsg?: string) => boolean;
+export type WorkerResolver = (value: WorkerResult) => void;
+export type WorkerTerminator = (status: BarStatus, errorMsg?: string) => void;
