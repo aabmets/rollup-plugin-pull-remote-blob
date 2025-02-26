@@ -97,13 +97,14 @@ export function formatErrors(results: t.WorkerResult[]): string {
 export function getBarFormat(sizeBytes?: number): string {
    const defaultBar = "{fileSize} [{bar}\x1B[0m] {percentage}%";
    const unknownBar = "{fileSize} [{bar}] {unknownPct}%";
+   const bar = ansis.fg(8)("│");
    return [
-      "│  {fileName}",
+      `${bar}  {fileName}`,
       sizeBytes ? defaultBar : unknownBar,
       "{eta_formatted}",
       "{duration_formatted}",
-      "{status}  │",
-   ].join("  │  ");
+      `{status}  ${bar}`,
+   ].join(`  ${bar}  `);
 }
 
 export function getWormSpinnerBarFormatter(): cp.BarFormatter {

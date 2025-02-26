@@ -10,6 +10,7 @@
  */
 
 import type * as t from "@types";
+import ansis from "ansis";
 import * as f from "./formatters.js";
 
 function getLabels(mustDownload: t.ProcessorReturn[]): string[] {
@@ -34,7 +35,13 @@ export function getTableHeader(mustDownload: t.ProcessorReturn[]): string {
       uprBorder = uprBorder.replace(`[${char}]`, line);
       btmBorder = btmBorder.replace(`[${char}]`, line);
    }
-   return [uprBorder, `│${labels.join("│")}│`, btmBorder].join("\n");
+   const color = 8;
+   const bar = ansis.fg(color)("│");
+   return [
+      ansis.fg(color)(uprBorder),
+      `${bar}${labels.join(bar)}${bar}`,
+      ansis.fg(color)(btmBorder),
+   ].join("\n");
 }
 
 export function getTableFooter(mustDownload: t.ProcessorReturn[]): string {
@@ -44,5 +51,5 @@ export function getTableFooter(mustDownload: t.ProcessorReturn[]): string {
       const line = "─".repeat(labels[index].length);
       border = border.replace(`[${char}]`, line);
    }
-   return border;
+   return ansis.fg(8)(border);
 }
