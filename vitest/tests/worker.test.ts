@@ -58,12 +58,12 @@ describe("worker", () => {
             reject(false);
          });
          worker.on("exit", (code: number) => {
-            let exit = () => resolve(true);
             if (code !== 0) {
                console.info(`Worker exited with code ${code}`);
-               exit = () => reject(false);
+               reject(false);
+               return;
             }
-            exit();
+            resolve(true);
          });
       });
       expect(result).toStrictEqual(true);
