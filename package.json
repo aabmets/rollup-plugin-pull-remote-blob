@@ -4,7 +4,7 @@
    "description": "Rollup plugin for downloading arbitrary remote files into any local directory on project build time",
    "keywords": ["rollup", "plugin", "download", "remote", "files", "blob", "build"],
    "type": "module",
-   "license": "MIT",
+   "license": "Apache-2.0",
    "repository": {
       "type": "git",
       "url": "https://github.com/aabmets/rollup-plugin-pull-remote-blob.git"
@@ -56,5 +56,8 @@
       "rollup": {
          "optional": true
       }
+   },
+   "engines": {
+      "node": ">=22.0.0"
    }
 }

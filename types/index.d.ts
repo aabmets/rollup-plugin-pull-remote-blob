@@ -6,7 +6,7 @@
  *   The contents of this file are subject to the terms and conditions defined in the License.
  *   You may not use, modify, or distribute this file except in compliance with the License.
  *
- *   SPDX-License-Identifier: MIT
+ *   SPDX-License-Identifier: Apache-2.0
  */
 
 import type { CustomPlugin, DecompressionOptions, PluginConfig } from "./internal.d.ts";
