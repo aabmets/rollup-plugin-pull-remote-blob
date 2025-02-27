@@ -11,8 +11,7 @@
 
 import type * as t from "@types";
 import { assert } from "superstruct";
-import { defaultPluginConfig } from "./constants.js";
-import { barStatus } from "./constants.js";
+import * as c from "./constants.js";
 import { downloadFiles } from "./downloader.js";
 import log from "./logger.js";
 import { processBlobOption } from "./processor.js";
@@ -35,7 +34,7 @@ async function pluginMain(config: t.PluginConfig): Promise<void> {
       log.downloadingRemoteBlobs();
       const results = await downloadFiles({ config, mustDownload });
 
-      const errorPredicate = ({ status }: t.WorkerResult) => status === barStatus.error;
+      const errorPredicate = ({ status }: t.WorkerResult) => status === c.barStatus.error;
       if (results.every(errorPredicate)) {
          log.allDownloadsFailed(results);
       } else if (results.some(errorPredicate)) {
@@ -57,7 +56,7 @@ export function pullRemoteBlobPlugin(config?: t.PluginConfig): t.CustomPlugin {
       name: "pull-remote-blob",
       buildStart: async () => {
          await pluginMain({
-            ...defaultPluginConfig,
+            ...c.defaultPluginConfig,
             ...config,
          });
       },

@@ -23,8 +23,8 @@ function digestDecompressionOptions(options: undefined | boolean | t.Decompressi
       return "";
    }
    return utils.digestData([
-      (options?.filter || "no-filter").toString(),
-      (options?.strip || "no-strip").toString(),
+      (options?.filter ?? "no-filter").toString(),
+      (options?.strip ?? "no-strip").toString(),
    ]);
 }
 
