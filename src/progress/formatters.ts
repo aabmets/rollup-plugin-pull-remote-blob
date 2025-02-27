@@ -90,7 +90,7 @@ export function formatErrors(results: t.WorkerResult[]): string {
    const messages: string[] = [];
    results.forEach(({ fileName, errorMsg, status }) => {
       if (status === c.barStatus.error) {
-         const match = fileName.match(/\s?\S+\s/);
+         const match = fileName.match(/^\s{0,2}.{0,3}\s/);
          const msgPad = " ".repeat(match ? match[0].length : 0);
          const errMsg = errorMsg ? errorMsg : ansis.italic("Unknown error");
          messages.push(` ${fileName.trimEnd()} error:\n ${msgPad}► ${errMsg}`);
