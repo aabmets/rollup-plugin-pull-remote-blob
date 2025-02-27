@@ -19,7 +19,7 @@ export interface UrlDest {
 }
 
 export interface DecompressionOptions {
-   filter?: string[];
+   filter?: (RegExp | string)[];
    strip?: number;
 }
 

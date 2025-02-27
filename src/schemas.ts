@@ -10,13 +10,24 @@
  */
 
 import path from "node:path";
-import { array, boolean, min, number, object, optional, refine, string, union } from "superstruct";
+import {
+   array,
+   boolean,
+   min,
+   number,
+   object,
+   optional,
+   refine,
+   regexp,
+   string,
+   union,
+} from "superstruct";
 import validator from "validator";
 import * as c from "./constants.js";
 import utils from "./utils.js";
 
 export const DecompressionOptionsStruct = object({
-   filter: optional(array(string())),
+   filter: optional(array(union([regexp(), string()]))),
    strip: optional(min(number(), 0)),
 });
 
