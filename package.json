@@ -1,8 +1,8 @@
 {
    "name": "rollup-plugin-pull-remote-blob",
-   "version": "1.0.6",
-   "description": "Rollup plugin to download arbitrary files from remote URL-s into any local directory on project build time",
-   "keywords": ["rollup", "plugin", "download", "remote", "files"],
+   "version": "2.0.0",
+   "description": "Rollup plugin for downloading arbitrary remote files into any local directory on project build time",
+   "keywords": ["rollup", "plugin", "download", "remote", "files", "blob", "build"],
    "type": "module",
    "license": "MIT",
    "repository": {
@@ -28,7 +28,7 @@
       "@types/decompress": ">=4.0.0",
       "@types/validator": ">=13.0.0",
       "ansis": ">=3.0.0",
-      "async-mutex": "^0.5.0",
+      "async-mutex": ">=0.5.0",
       "axios": ">=1.6.0",
       "cli-progress": ">=3.0.0",
       "decompress": ">=4.0.0",
