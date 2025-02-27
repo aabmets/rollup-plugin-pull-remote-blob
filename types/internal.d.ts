@@ -145,6 +145,15 @@ export interface WorkerRunnerArgs {
    error: Error;
 }
 
+export interface MessageHandlerArgs {
+   message: WorkerMessage;
+   config: PluginConfig;
+   entry: HistoryFileEntry;
+   error: Error;
+   bar: BarController;
+   terminate: (status: BarStatus, errorMsg?: string) => void;
+}
+
 export type Condition = (errorMsg?: string) => boolean;
 export type WorkerResolver = (value: WorkerResult) => void;
 export type WorkerTerminator = (status: BarStatus, errorMsg?: string) => void;

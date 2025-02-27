@@ -40,6 +40,23 @@ export async function setRemoteFileSizeBytes(procRet: t.ProcessorReturn): Promis
    procRet.option.sizeBytes = value;
 }
 
+export function handleWorkerMessage(args: t.MessageHandlerArgs): void {
+   const { message, config, entry, error, bar, terminate } = args;
+   if (message.type === "done") {
+      entry.decompression.filesList = message.filesList;
+      terminate(c.barStatus.done);
+   } else if (message.type === "error") {
+      terminate(c.barStatus.error, message.error);
+   } else if (config.haltOnError && error.isRaised) {
+      terminate(c.barStatus.halted);
+   } else if (message.type === "progress") {
+      bar.setStatus(c.barStatus.downloading);
+      bar.increment(message.bytes);
+   } else if (message.type === "decompressing") {
+      bar.setStatus(c.barStatus.decompressing);
+   }
+}
+
 export async function runDownloadWorker(args: t.WorkerRunnerArgs): Promise<t.WorkerResult> {
    const { config, procRet, progBarMap, error } = args;
    const { option, entry, details } = procRet;
@@ -68,19 +85,7 @@ export async function runDownloadWorker(args: t.WorkerRunnerArgs): Promise<t.Wor
    return new Promise((resolve: t.WorkerResolver) => {
       const terminate = getTerminator(resolve);
       worker.on("message", (message: t.WorkerMessage) => {
-         if (message.type === "done") {
-            entry.decompression.filesList = message.filesList;
-            terminate(c.barStatus.done);
-         } else if (message.type === "error") {
-            terminate(c.barStatus.error, message.error);
-         } else if (config.haltOnError && error.isRaised) {
-            terminate(c.barStatus.halted);
-         } else if (message.type === "progress") {
-            bar.setStatus(c.barStatus.downloading);
-            bar.increment(message.bytes);
-         } else if (message.type === "decompressing") {
-            bar.setStatus(c.barStatus.decompressing);
-         }
+         handleWorkerMessage({ message, config, entry, error, bar, terminate });
       });
       worker.on("error", (err: Error) => {
          terminate(c.barStatus.error, err.message);

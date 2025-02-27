@@ -45,17 +45,21 @@ export async function processBlobOption(args: t.ProcessorArgs): Promise<t.Proces
          details: oldDetails,
          skipDownload: true,
       };
-      if (newDetails.fileExists && oldEntry.blobOptionsDigest === newEntry.blobOptionsDigest) {
-         if (!option.alwaysPull) {
-            return skipDownload;
-         }
+      if (
+         !option.alwaysPull &&
+         newDetails.fileExists &&
+         oldEntry.blobOptionsDigest === newEntry.blobOptionsDigest
+      ) {
+         return skipDownload;
       }
       if (oldEntry.decompression.filesList.length > 0) {
          const allExist = await archive.allDecompressedFilesExist(oldEntry);
-         if (allExist && dcmpOptDigest === oldEntry.decompression.optionsDigest) {
-            if (!option.alwaysPull) {
-               return skipDownload;
-            }
+         if (
+            !option.alwaysPull &&
+            allExist &&
+            dcmpOptDigest === oldEntry.decompression.optionsDigest
+         ) {
+            return skipDownload;
          } else {
             await archive.removeAllDecompressedFiles(oldEntry);
             return mustDownload;

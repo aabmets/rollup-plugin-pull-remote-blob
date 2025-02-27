@@ -48,25 +48,33 @@ export function* wormSpinnerGenerator(): Generator<string, void, void> {
 
       progress %= cycle;
 
+      const charComputer1 = (adjId: number, leftOver: number) => {
+         if (adjId >= leftOver && adjId < leftOver + 3) {
+            return charSet1[cycle + adjId];
+         }
+         if (adjId < 0 || adjId >= charSet1.length) {
+            return " ";
+         }
+         return charSet1[adjId];
+      };
+
+      const charComputer2 = (adjId: number, leftOver: number) => {
+         if (adjId >= leftOver && adjId < leftOver + 3) {
+            return charSet2[cycle + adjId];
+         }
+         if (adjId < 0 || adjId >= charSet2.length) {
+            return " ";
+         }
+         return charSet2[adjId];
+      };
+
       const spinnerCharsArray: string[] = new Array(barWidth).fill(" ").map((_, idx) => {
          const adjId = -8 * (idx % Math.floor(barWidth / numCrawlers)) + progress;
          const leftOver = -cycle + 8;
          if (idx % 2 === 0) {
-            if (adjId >= leftOver && adjId < leftOver + 3) {
-               return charSet1[cycle + adjId];
-            }
-            if (adjId < 0 || adjId >= charSet1.length) {
-               return " ";
-            }
-            return charSet1[adjId];
+            return charComputer1(adjId, leftOver);
          } else {
-            if (adjId >= leftOver && adjId < leftOver + 3) {
-               return charSet2[cycle + adjId];
-            }
-            if (adjId < 0 || adjId >= charSet2.length) {
-               return " ";
-            }
-            return charSet2[adjId];
+            return charComputer2(adjId, leftOver);
          }
       });
 
