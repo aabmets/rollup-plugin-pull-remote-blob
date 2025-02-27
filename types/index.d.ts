@@ -13,5 +13,5 @@ import type { CustomPlugin, DecompressionOptions, PluginConfig } from "./interna
 
 declare module "rollup-plugin-pull-remote-blob" {
    export function pullRemoteBlobPlugin(config?: PluginConfig): CustomPlugin;
-   export type { DecompressionOptions, PluginConfig, CustomPlugin };
+   export type { PluginConfig, DecompressionOptions };
 }
