@@ -12,6 +12,7 @@
 import fsp from "node:fs/promises";
 import { Worker } from "node:worker_threads";
 import type * as t from "@types";
+import { Semaphore } from "async-mutex";
 import axios, { type AxiosResponse } from "axios";
 import * as c from "./constants.js";
 import * as b from "./progress/bars.js";
@@ -137,6 +138,7 @@ export async function downloadFiles(args: t.DownloaderArgs): Promise<t.WorkerRes
    }
 
    // download non-errored remote blobs if should keep going
+   const semaphore = new Semaphore(c.parallelDownloads);
    await Promise.all(
       mustDownload
          .filter(({ entry }) => {
@@ -145,8 +147,10 @@ export async function downloadFiles(args: t.DownloaderArgs): Promise<t.WorkerRes
          })
          .map(async (procRet) => {
             const args = { config, procRet, progBarMap, error };
-            const res = await runDownloadWorker(args);
-            results.push(res);
+            await semaphore.runExclusive(async () => {
+               const res = await runDownloadWorker(args);
+               results.push(res);
+            });
          }),
    );
    multiBar.stop();
