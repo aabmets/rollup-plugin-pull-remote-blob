@@ -39,7 +39,7 @@ export function getBarOptions(barStatus: t.BarStatus[], sizeBytes?: number): cp.
 export function getController(args: t.ControllerArgs): t.BarController {
    const { fileName, sizeBytes, multiBar } = args;
    const barStatus: t.BarStatus[] = [c.barStatus.waiting];
-   let unknownSizeBytes = 0;
+   let receivedSizeBytes = 0;
 
    const bar: cp.SingleBar = multiBar.create(
       sizeBytes ?? 0,
@@ -55,16 +55,18 @@ export function getController(args: t.ControllerArgs): t.BarController {
          barStatus[0] = status;
       },
       increment: (amount: number) => {
+         receivedSizeBytes += amount;
          if (sizeBytes) {
             bar.increment(amount);
          } else {
-            unknownSizeBytes += amount;
+            const rsbFmt = f.formatFileSize(receivedSizeBytes);
+            bar.update({ fileSize: rsbFmt });
          }
       },
       stop: () => {
          if (!sizeBytes) {
             const unknownPct = barStatus[0] === c.barStatus.done ? 100 : "  0";
-            const fileSize = f.formatFileSize(unknownSizeBytes);
+            const fileSize = f.formatFileSize(receivedSizeBytes);
             bar.update(1, { fileSize, unknownPct });
          }
          bar.stop();
