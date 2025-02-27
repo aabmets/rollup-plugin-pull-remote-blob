@@ -1,8 +1,8 @@
 {
    "name": "rollup-plugin-pull-remote-blob",
-   "version": "2.0.0",
+   "version": "2.0.1",
    "description": "Rollup plugin for downloading arbitrary remote files into any local directory on project build time",
-   "keywords": ["rollup", "plugin", "download", "remote", "files", "blob", "build"],
+   "keywords": ["rollup", "vite", "plugin", "download", "remote", "files", "blob", "build"],
    "type": "module",
    "license": "Apache-2.0",
    "repository": {

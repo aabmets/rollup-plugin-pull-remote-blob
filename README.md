@@ -14,18 +14,24 @@
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=aabmets_rollup-plugin-pull-remote-blob&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=aabmets_rollup-plugin-pull-remote-blob)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=aabmets_rollup-plugin-pull-remote-blob&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=aabmets_rollup-plugin-pull-remote-blob)
 
+
+## CLI Progress Demo
+
+![Demo](assets/rollup-plugin-pull-remote-blob.gif)
+
 ## Overview
 
 `rollup-plugin-pull-remote-blob` is a Rollup plugin designed to download remote files (blobs) during the build process. 
 It allows you to specify remote resources, manage caching, and handle automatic decompression of downloaded archives. 
-This plugin is ideal for scenarios where assets need to be dynamically fetched and processed during build.
+Because Vite is built on Rollup, you can also use this plugin in Vite projects.
 
 ## Features
 
-- **Download Remote Files:** Specify URLs to download resources and save them to a local destination.
-- **Decompression Support:** Automatically decompress downloaded files using popular decompression options.
+- **Download:** Specify URLs where to download resources from and where the files should be saved to.
 - **Caching:** Avoid redundant downloads by checking existing local files and verifying their integrity.
-- **Flexible Configuration:** You can use regex patterns and de-nesting to filter decompressed files.
+- **Error Handling** Option to halt waiting downloads when another download encounters an error (defaults to true).
+- **Decompression Support:** Automatically decompress downloaded archives (we support _.zip_, _.tar_, _.tgz_ or _.tgz.bz2_).
+- **Some Configurability:** You can use regex patterns and de-nesting to filter files when decompressing.
 
 ## Installation
 
@@ -38,8 +44,8 @@ bun add rollup-plugin-pull-remote-blob --dev
 
 ## Usage
 You can configure the plugin to download files as part of your Rollup build configuration. 
-This plugin can be used with or without TypeScript; the types are handled automatically.
-Here is a basic example of how to use rollup-plugin-pull-remote-blob in your Rollup configuration:
+This plugin can be used with or without TypeScript; the types are handled automatically. 
+Here is an example with all explained config options of how to use this plugin in your Rollup configuration:
 
 ```typescript
 import { rollup } from 'rollup';
