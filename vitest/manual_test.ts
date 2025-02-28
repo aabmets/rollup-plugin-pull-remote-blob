@@ -12,8 +12,9 @@
 import { pullRemoteBlobPlugin } from "../src";
 
 const obj = pullRemoteBlobPlugin({
-   haltOnError: false,
+   haltOnError: true,
    showProgress: true,
+   rollupHook: "closeBundle",
    blobs: [
       {
          url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx",
@@ -55,4 +56,4 @@ const obj = pullRemoteBlobPlugin({
    ],
 });
 
-await obj.buildStart();
+await obj.closeBundle();

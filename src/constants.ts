@@ -38,10 +38,11 @@ export const historyFilePath: string = (() => {
    return path.resolve(dirname, historyFileName);
 })();
 
-export const defaultPluginConfig: t.PluginConfig = {
+export const defaultPluginConfig: t.MergedConfig = {
    blobs: [],
    showProgress: true,
    haltOnError: true,
+   rollupHook: "closeBundle",
 };
 
 export const barStatus: t.BarStatusMap = {

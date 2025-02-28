@@ -56,8 +56,9 @@ rollup({
    input: 'src/index.js',
    plugins: [
       pullRemoteBlobPlugin({
-         haltOnError: false,  // should other waiting downloads be halted when an error is encountered? Default is true
-         showProgress: false,  // should download progress bars be displayed in the console? Default is true
+         haltOnError: true,  // should other waiting downloads be halted when an error is encountered? Default is true
+         showProgress: true,  // should download progress bars be displayed in the console? Default is true
+         rollupHook: "closeBundle",  // during which Rollup stage the plugin should be executed? Default is "closeBundle"
          blobs: [
              {
                 url: 'https://example.com/data.json',

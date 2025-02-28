@@ -70,4 +70,10 @@ export const PluginConfigStruct = object({
    }),
    showProgress: optional(boolean()),
    haltOnError: optional(boolean()),
+   rollupHook: optional(
+      refine(string(), "valid_hooks", (hook) => {
+         const hooksArray = ["buildStart", "buildEnd", "writeBundle", "closeBundle"];
+         return hooksArray.includes(hook) ? true : `Unsupported rollup hook: '${hook}'`;
+      }),
+   ),
 });

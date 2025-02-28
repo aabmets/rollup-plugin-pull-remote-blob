@@ -36,9 +36,22 @@ export interface PluginConfig {
    blobs: RemoteBlobOption[];
    showProgress?: boolean;
    haltOnError?: boolean;
+   rollupHook?: "buildStart" | "buildEnd" | "writeBundle" | "closeBundle";
 }
 
-export type CustomPlugin = Plugin & { buildStart: () => Promise<void> };
+export interface MergedConfig {
+   blobs: RemoteBlobOption[];
+   showProgress: boolean;
+   haltOnError: boolean;
+   rollupHook: "buildStart" | "buildEnd" | "writeBundle" | "closeBundle";
+}
+
+export interface CustomPlugin extends Plugin {
+   buildStart: () => Promise<void>;
+   buildEnd: () => Promise<void>;
+   closeBundle: () => Promise<void>;
+   writeBundle: () => Promise<void>;
+}
 
 export interface DestDetails {
    fileName: string;

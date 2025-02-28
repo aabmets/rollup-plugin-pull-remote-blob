@@ -18,7 +18,7 @@ import { processBlobOption } from "./processor.js";
 import { PluginConfigStruct } from "./schemas.js";
 import utils from "./utils.js";
 
-async function pluginMain(config: t.PluginConfig): Promise<void> {
+async function pluginMain(config: t.MergedConfig): Promise<void> {
    if (config.blobs.length === 0) {
       log.nothingToDownload();
       return;
@@ -52,13 +52,15 @@ async function pluginMain(config: t.PluginConfig): Promise<void> {
 
 export function pullRemoteBlobPlugin(config?: t.PluginConfig): t.CustomPlugin {
    assert(config, PluginConfigStruct);
+   const mergedConfig = { ...c.defaultPluginConfig, ...config };
+   const hookHandler = async (hook: string) => {
+      hook === mergedConfig.rollupHook ? await pluginMain(mergedConfig) : null;
+   };
    return {
       name: "pull-remote-blob",
-      buildStart: async () => {
-         await pluginMain({
-            ...c.defaultPluginConfig,
-            ...config,
-         });
-      },
+      buildStart: () => hookHandler("buildStart"),
+      buildEnd: () => hookHandler("buildEnd"),
+      writeBundle: () => hookHandler("writeBundle"),
+      closeBundle: () => hookHandler("closeBundle"),
    };
 }

@@ -32,3 +32,6 @@ coverage
 
 # Plugin history file
 src/userData/historical_entries.json
+
+# Vitest downloads
+vitest/downloads
