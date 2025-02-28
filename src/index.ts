@@ -54,7 +54,9 @@ export function pullRemoteBlobPlugin(config?: t.PluginConfig): t.CustomPlugin {
    assert(config, PluginConfigStruct);
    const mergedConfig = { ...c.defaultPluginConfig, ...config };
    const hookHandler = async (hook: string) => {
-      hook === mergedConfig.rollupHook ? await pluginMain(mergedConfig) : null;
+      if (hook === mergedConfig.rollupHook) {
+         await pluginMain(mergedConfig);
+      }
    };
    return {
       name: "pull-remote-blob",
