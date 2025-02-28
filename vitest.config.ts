@@ -14,18 +14,25 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
    test: {
-      globalSetup: "./vitest/global_setup.ts",
+      globalSetup: "vitest/global_setup.ts",
       include: ["vitest/tests/**/*"],
       server: {
          deps: {
             external: ["typescript"],
          },
       },
+      coverage: {
+         enabled: true,
+         provider: "v8",
+         include: ["src"],
+         reporter: ["text", "json", "html"],
+         reportsDirectory: "vitest/coverage",
+      },
    },
    resolve: {
       alias: {
-         "@src": path.resolve(__dirname, "./src"),
-         "@types": path.resolve(__dirname, "./types/internal.d.ts"),
+         "@src": path.resolve(__dirname, "src"),
+         "@types": path.resolve(__dirname, "types/internal.d.ts"),
       },
    },
 });

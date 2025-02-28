@@ -18,6 +18,7 @@
    },
    "files": ["dist", "types", "README.md", "LICENSE"],
    "scripts": {
+      "coverage": "vitest --ui --coverage",
       "compile": "tsc -p tsconfig.json",
       "check": "bun run compile --noEmit && biome check",
       "pubtest": "bun run compile && bun pm pack --destination ./packages",
@@ -40,6 +41,7 @@
       "@types/bun": "^1.2.3",
       "@types/node": "^22.13.5",
       "@vitest/coverage-v8": "^3.0.7",
+      "@vitest/ui": "^3.0.7",
       "lefthook": "^1.11.0",
       "rollup": "^4.34.8",
       "typescript": "^5.7.3",
