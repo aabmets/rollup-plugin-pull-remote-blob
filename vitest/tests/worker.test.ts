@@ -19,10 +19,10 @@ import * as s from "@src/schemas";
 import utils from "@src/utils";
 import type * as t from "@types";
 import { assert } from "superstruct";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 describe("worker", () => {
-   test("download file", async () => {
+   it("should use worker threads to download and decompress archives", async () => {
       const option: t.RemoteBlobOption = {
          url: "https://github.com/aabmets/rollup-plugin-pull-remote-blob/archive/refs/heads/main.zip",
          dest: path.join(tmpdir(), "vitest", crypto.randomBytes(8).toString("hex")),

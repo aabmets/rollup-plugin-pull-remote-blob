@@ -18,7 +18,7 @@ import * as c from "./constants.js";
 
 export function searchUpwards(forPath: string, startFrom = import.meta.url): string {
    const startPath = startFrom.startsWith("file://") ? url.fileURLToPath(startFrom) : startFrom;
-   let currentDir = path.dirname(startPath);
+   let currentDir = path.resolve(startPath);
    while (true) {
       const possiblePath = path.resolve(currentDir, forPath);
       if (fs.existsSync(possiblePath)) {
@@ -33,10 +33,11 @@ export function searchUpwards(forPath: string, startFrom = import.meta.url): str
    throw new Error(`Could not find path: '${forPath}'`);
 }
 
-function sortPathsByDepth(paths: string[], sep = path.sep) {
+function sortPathsByDepth(paths: string[]) {
+   const normalizePath = (p: string) => p.replace(/\\/g, "/");
    return paths.sort((a: string, b: string) => {
-      const depthA = a.split(sep).length;
-      const depthB = b.split(sep).length;
+      const depthA = normalizePath(a).split("/").length;
+      const depthB = normalizePath(b).split("/").length;
       return depthB - depthA;
    });
 }
