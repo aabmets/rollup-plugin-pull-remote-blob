@@ -139,6 +139,12 @@ describe("readHistoryFile", () => {
       expect(result).toEqual(mockData);
    });
 
+   it("should return an empty object when history file does not exist", () => {
+      vi.spyOn(fs, "existsSync").mockReturnValue(false);
+      const result = utils.readHistoryFile();
+      expect(result).toEqual({});
+   });
+
    it("should return an empty object when fs.readFileSync throws an error", () => {
       vi.spyOn(fs, "existsSync").mockReturnValue(true);
       vi.spyOn(fs, "readFileSync").mockImplementation(() => {
