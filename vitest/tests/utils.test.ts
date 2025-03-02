@@ -15,7 +15,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import utils from "@src/utils";
 import type * as t from "@types";
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 describe("searchUpwards", () => {
    const tempBase = path.join(tmpdir(), "vitest", crypto.randomBytes(8).toString("hex"));
@@ -71,7 +71,8 @@ describe("sortPathsByDepth", () => {
 });
 
 describe("getDestDetails", () => {
-   afterAll(vi.restoreAllMocks);
+   afterEach(vi.restoreAllMocks);
+
    it("should return correct details when destination is a file", () => {
       const data: t.UrlDest = {
          dest: "downloads/other_name.txt",
@@ -120,7 +121,8 @@ describe("getDestDetails", () => {
 });
 
 describe("readHistoryFile", () => {
-   afterAll(vi.restoreAllMocks);
+   afterEach(vi.restoreAllMocks);
+
    it("should return valid history data structure when file exists", () => {
       const mockData: t.HistoryFileContents = {
          entry1: {
@@ -166,7 +168,8 @@ describe("readHistoryFile", () => {
 });
 
 describe("writeHistoryFile", () => {
-   afterAll(vi.restoreAllMocks);
+   afterEach(vi.restoreAllMocks);
+
    const mockEntries: t.HistoryFileEntry[] = [
       {
          url: "https://example.com/file.zip",
