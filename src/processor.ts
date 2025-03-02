@@ -45,13 +45,6 @@ export async function processBlobOption(args: t.ProcessorArgs): Promise<t.Proces
          details: oldDetails,
          skipDownload: true,
       };
-      if (
-         !option.alwaysPull &&
-         newDetails.fileExists &&
-         oldEntry.blobOptionsDigest === newEntry.blobOptionsDigest
-      ) {
-         return skipDownload;
-      }
       if (oldEntry.decompression.filesList.length > 0) {
          const allExist = await archive.allDecompressedFilesExist(oldEntry);
          if (
@@ -64,6 +57,13 @@ export async function processBlobOption(args: t.ProcessorArgs): Promise<t.Proces
             await archive.removeAllDecompressedFiles(oldEntry);
             return mustDownload;
          }
+      }
+      if (
+         !option.alwaysPull &&
+         newDetails.fileExists &&
+         oldEntry.blobOptionsDigest === newEntry.blobOptionsDigest
+      ) {
+         return skipDownload;
       }
       if (oldDetails.fileExists) {
          await fsp.unlink(oldDetails.filePath);
