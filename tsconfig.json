@@ -29,7 +29,8 @@
       "baseUrl": ".",
       "paths": {
          "@src/*": ["./src/*"],
-         "@types": ["./types/internal.d.ts"]
+         "@types": ["./types/internal.d.ts"],
+         "@testutils": ["./vitest/testutils/index.ts"]
       }
    }
 }
