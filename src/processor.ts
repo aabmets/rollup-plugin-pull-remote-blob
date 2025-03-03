@@ -46,7 +46,7 @@ export async function processBlobOption(args: t.ProcessorArgs): Promise<t.Proces
          skipDownload: true,
       };
       if (oldEntry.decompression.filesList.length > 0) {
-         const allExist = await archive.allDecompressedFilesExist(oldEntry);
+         const allExist = await archive.allDecompressedFilesExist(oldEntry, oldDetails);
          if (
             !option.alwaysPull &&
             allExist &&
@@ -54,7 +54,7 @@ export async function processBlobOption(args: t.ProcessorArgs): Promise<t.Proces
          ) {
             return skipDownload;
          } else {
-            await archive.removeAllDecompressedFiles(oldEntry);
+            await archive.removeAllDecompressedFiles(oldEntry, oldDetails);
             return mustDownload;
          }
       }

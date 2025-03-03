@@ -28,8 +28,10 @@ function digestDecompressionOptions(options: undefined | boolean | t.Decompressi
    ]);
 }
 
-async function allDecompressedFilesExist(entry: t.HistoryFileEntry): Promise<boolean> {
-   const details = utils.getDestDetails(entry);
+async function allDecompressedFilesExist(
+   entry: t.HistoryFileEntry,
+   details: t.DestDetails,
+): Promise<boolean> {
    const filesList = entry.decompression.filesList;
    const results = await Promise.all(
       filesList.map(async (partialFilePath) => {
@@ -43,12 +45,14 @@ async function allDecompressedFilesExist(entry: t.HistoryFileEntry): Promise<boo
    return results.every((value) => value === true);
 }
 
-async function removeAllDecompressedFiles(entry: t.HistoryFileEntry): Promise<void> {
+async function removeAllDecompressedFiles(
+   entry: t.HistoryFileEntry,
+   details: t.DestDetails,
+): Promise<void> {
    const filesList = entry.decompression.filesList;
    if (filesList.length === 0) {
       return;
    }
-   const details = utils.getDestDetails(entry);
    const fullFilePathsArray = filesList.map((partialFilePath) => {
       return path.join(details.dirPath, partialFilePath);
    });
