@@ -13,12 +13,12 @@ import path from "node:path";
 import {
    array,
    boolean,
-   min,
-   number,
+   integer,
    object,
    optional,
    refine,
    regexp,
+   size,
    string,
    union,
 } from "superstruct";
@@ -28,7 +28,7 @@ import utils from "./utils.js";
 
 export const DecompressionOptionsStruct = object({
    filter: optional(array(union([regexp(), string()]))),
-   strip: optional(min(number(), 0)),
+   strip: optional(size(integer(), 0, 100)),
 });
 
 export const RemoteBlobOptionStruct = object({
@@ -36,9 +36,9 @@ export const RemoteBlobOptionStruct = object({
       const errMsg = `URL does not pass regex pattern validation: ${value}`;
       return validator.isURL(`${value}`) || errMsg;
    }),
-   dest: string(),
-   sizeBytes: optional(number()),
-   prettyName: optional(string()),
+   dest: size(string(), 3, 1000),
+   sizeBytes: optional(size(integer(), 0)),
+   prettyName: optional(size(string(), c.prettyNameMinLength, c.prettyNameMaxLength)),
    alwaysPull: optional(boolean()),
    decompress: optional(union([boolean(), DecompressionOptionsStruct])),
 });
@@ -47,23 +47,14 @@ export const PluginConfigStruct = object({
    blobs: refine(array(RemoteBlobOptionStruct), "constraints", (blobs) => {
       const rboDigests: string[] = [];
       for (const option of blobs) {
+         if (path.extname(option.dest) !== "" && !!option.decompress) {
+            return `Destination must be a directory when decompressing: '${option.dest}'`;
+         }
          const digest = utils.digestRemoteBlobOption(option);
          if (rboDigests.includes(digest)) {
             return `Duplicate entry: ${option.url} -> ${option.dest}`;
          } else {
             rboDigests.push(digest);
-         }
-         if (path.extname(option.dest) !== "" && !!option.decompress) {
-            return `Destination must be a directory when decompressing: '${option.dest}'`;
-         }
-         const prettyName = option.prettyName;
-         const minLen = c.prettyNameMinLength;
-         const maxLen = c.prettyNameMaxLength;
-         if (prettyName && prettyName.length < minLen) {
-            return `Pretty name '${prettyName}' must be at least ${minLen} characters long.`;
-         }
-         if (prettyName && prettyName.length > maxLen) {
-            return `Pretty name '${prettyName}' must not exceed ${maxLen} characters in length.`;
          }
       }
       return true;
