@@ -22,7 +22,8 @@ import { assert } from "superstruct";
 import { describe, expect, it } from "vitest";
 
 describe("worker", () => {
-   it("should use worker threads to download and decompress archives", async () => {
+   const options = { retry: 3 };
+   it("should use worker threads to download and decompress archives", options, async () => {
       const option: t.RemoteBlobOption = {
          url: "https://github.com/aabmets/rollup-plugin-pull-remote-blob/archive/refs/heads/main.zip",
          dest: path.join(tmpdir(), "vitest", crypto.randomBytes(8).toString("hex")),

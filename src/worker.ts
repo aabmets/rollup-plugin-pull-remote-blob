@@ -64,6 +64,7 @@ export async function downloadFile() {
    }
 }
 
+/* v8 ignore next 3 */
 if (!wrk.isMainThread && wrk.parentPort) {
    await downloadFile();
 }
