@@ -33,7 +33,7 @@ export default defineConfig({
       alias: {
          "@src": path.resolve(__dirname, "src"),
          "@types": path.resolve(__dirname, "types/internal.d.ts"),
-         "@testutils": path.resolve(__dirname, "testutils"),
+         "@testutils": path.resolve(__dirname, "vitest/testutils/index.ts"),
       },
    },
 });

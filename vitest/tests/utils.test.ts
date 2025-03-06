@@ -9,16 +9,15 @@
  *   SPDX-License-Identifier: Apache-2.0
  */
 
-import crypto from "node:crypto";
 import fs from "node:fs";
-import { tmpdir } from "node:os";
 import path from "node:path";
 import utils from "@src/utils";
+import * as tu from "@testutils";
 import type * as t from "@types";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 describe("searchUpwards", () => {
-   const tempBase = path.join(tmpdir(), "vitest", crypto.randomBytes(8).toString("hex"));
+   const tempBase = tu.getTempDirPath();
    const subDirName = "sub-dir";
    const nestedSubDirName = "nested-sub-dir";
    const targetFileName = "targetFile.txt";
