@@ -11,8 +11,26 @@
 
 import * as c from "@src/constants";
 import * as f from "@src/progress/formatters";
+import { wormSpinnerGenerator } from "@src/progress/spinners";
 import type * as t from "@types";
+import ansis from "ansis";
 import { describe, expect, it } from "vitest";
+
+describe("spinners", () => {
+   it("should generate crawling progress bar", () => {
+      const spinner = wormSpinnerGenerator();
+
+      const bar1 = spinner.next().value;
+      expect(typeof bar1).toEqual("string");
+      expect(bar1?.length).toEqual(c.progressBarWidth);
+
+      const bar2 = spinner.next().value;
+      expect(typeof bar2).toEqual("string");
+      expect(bar2?.length).toEqual(c.progressBarWidth);
+
+      expect(bar1 === bar2).toEqual(false);
+   });
+});
 
 describe("formatters", () => {
    function getMustDownload(pn1?: string, pn2?: string): t.ProcessorReturn[] {
@@ -53,6 +71,7 @@ describe("formatters", () => {
    it("should format file name", () => {
       const mustDownload = getMustDownload("qwe", "Even longer shorter name override");
       let result = f.formatFileName(mustDownload, 0);
+      result = ansis.strip(result);
       expect(result).toEqual("1) qwe".padEnd(c.fileNameMaxDisplayLength));
       result = f.formatFileName(mustDownload, 1);
       expect(result).toEqual("2) Even longer shorter name o…");
@@ -81,7 +100,8 @@ describe("formatters", () => {
 
    it("should format status", () => {
       for (const status of Object.values(c.barStatus)) {
-         const result = f.formatStatus(status);
+         let result = f.formatStatus(status);
+         result = ansis.strip(result);
          expect(result).toEqual(status.text.padEnd(c.maxBarStatusTextLength));
       }
    });
@@ -91,13 +111,14 @@ describe("formatters", () => {
          if (status === c.barStatus.error) {
             continue;
          }
-         const result = f.formatErrors([
+         let result = f.formatErrors([
             {
                fileName: "1) some_archive.zip",
                errorMsg: undefined,
                status: status,
             } as t.WorkerResult,
          ]);
+         result = ansis.strip(result);
          expect(result).toEqual("");
       }
       let result = f.formatErrors([
@@ -107,6 +128,7 @@ describe("formatters", () => {
             status: c.barStatus.error,
          } as t.WorkerResult,
       ]);
+      result = ansis.strip(result);
       expect(result).toEqual(" 1) some_archive.zip error:\n    ► Something Bad Happened");
 
       result = f.formatErrors([
@@ -116,6 +138,7 @@ describe("formatters", () => {
             status: c.barStatus.error,
          } as t.WorkerResult,
       ]);
+      result = ansis.strip(result);
       expect(result).toEqual(" 1) some_archive.zip error:\n    ► Unknown error");
 
       result = f.formatErrors([
@@ -125,6 +148,7 @@ describe("formatters", () => {
             status: c.barStatus.error,
          } as t.WorkerResult,
       ]);
+      result = ansis.strip(result);
       expect(result).toEqual(" some_archive.zip error:\n ► Unknown error");
    });
 
@@ -143,12 +167,14 @@ describe("formatters", () => {
 
       barStatus[0] = c.barStatus.halted;
       result = fmtFn(1, { barsize: 10 });
+      result = ansis.strip(result);
       expect(result).toEqual("—".repeat(10));
       result = fmtFn(1, { barsize: 10, barIncompleteChar: "*" });
       expect(result).toEqual("*".repeat(10));
 
       barStatus[0] = c.barStatus.done;
       result = fmtFn(1, { barsize: 10 });
+      result = ansis.strip(result);
       expect(result).toEqual("■".repeat(10));
       result = fmtFn(1, { barsize: 10, barCompleteChar: "@" });
       expect(result).toEqual("@".repeat(10));
