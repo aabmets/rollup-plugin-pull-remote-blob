@@ -48,8 +48,8 @@ export function formatFileName(mustDownload: t.ProcessorReturn[], index: number)
 
 export function formatFileSize(bytes?: number): string {
    if (bytes === undefined) {
-      const paddedNum = "???".padStart(6, " ");
-      const paddedUnit = "B".padEnd(3, " ");
+      const paddedNum = "???".padStart(6);
+      const paddedUnit = "B".padEnd(3);
       return `${paddedNum} ${paddedUnit}`;
    }
 
@@ -75,14 +75,14 @@ export function formatFileSize(bytes?: number): string {
       numStr = value.toString();
    }
 
-   const paddedNum = numStr.padStart(6, " ");
-   const paddedUnit = unit.padEnd(3, " ");
+   const paddedNum = numStr.padStart(6);
+   const paddedUnit = unit.padEnd(3);
 
    return `${paddedNum} ${paddedUnit}`;
 }
 
 export function formatStatus(status: t.BarStatus): string {
-   const paddedText = status.text.padEnd(c.maxBarStatusTextLength, " ");
+   const paddedText = status.text.padEnd(c.maxBarStatusTextLength);
    return status.colorize(paddedText);
 }
 
@@ -114,18 +114,18 @@ export function getBarFormat(sizeBytes?: number): string {
 
 export function getWormSpinnerBarFormatter(barStatus: t.BarStatus[]): cp.BarFormatter {
    const spinner = wormSpinnerGenerator();
-   return (progress, options) => {
-      const count = options?.barsize || c.progressBarWidth;
-      let char = "?";
+   const fmtFn = (progress: number, options: cp.Options) => {
+      const count = options?.barsize ?? c.progressBarWidth;
       if (progress === 1) {
          if (barStatus[0] === c.barStatus.done) {
-            char = options?.barCompleteChar || "■";
+            const char = options?.barCompleteChar ?? "■";
             return char.repeat(count);
          } else {
-            char = options?.barIncompleteChar || "—";
+            const char = options?.barIncompleteChar ?? "—";
             return ansis.fg(8)(char.repeat(count));
          }
       }
-      return spinner.next().value || char.repeat(count);
+      return spinner.next().value;
    };
+   return fmtFn as cp.BarFormatter;
 }

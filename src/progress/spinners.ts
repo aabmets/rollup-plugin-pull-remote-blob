@@ -78,6 +78,7 @@ export function* wormSpinnerGenerator(): Generator<string, void, void> {
          }
       });
 
+      /* v8 ignore next 3 */
       yield spinnerCharsArray.join("");
       progress++;
    }
