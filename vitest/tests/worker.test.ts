@@ -15,7 +15,7 @@ import { Worker } from "node:worker_threads";
 import * as c from "@src/constants";
 import * as s from "@src/schemas";
 import utils from "@src/utils";
-import * as tu from "@testutils";
+import * as u from "@testutils";
 import type * as t from "@types";
 import { assert } from "superstruct";
 import { describe, expect, it } from "vitest";
@@ -25,7 +25,7 @@ describe("worker", () => {
    it("should use worker threads to download and decompress archives", options, async () => {
       const option: t.RemoteBlobOption = {
          url: "https://github.com/aabmets/rollup-plugin-pull-remote-blob/archive/refs/heads/main.zip",
-         dest: tu.getTempDirPath(),
+         dest: u.getTempDirPath(),
          decompress: {
             filter: ["README.md", "src"],
             strip: 1,

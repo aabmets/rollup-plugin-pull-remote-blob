@@ -48,8 +48,8 @@
             "useImportExtensions": "off"
          },
          "performance": {
-            "noBarrelFile": "error",
-            "noReExportAll": "error"
+            "noBarrelFile": "off",
+            "noReExportAll": "off"
          },
          "style": {
             "noUselessElse": "off",

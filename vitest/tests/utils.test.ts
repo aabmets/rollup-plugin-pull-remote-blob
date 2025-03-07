@@ -12,12 +12,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import utils from "@src/utils";
-import * as tu from "@testutils";
+import * as u from "@testutils";
 import type * as t from "@types";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 describe("searchUpwards", () => {
-   const tempBase = tu.getTempDirPath();
+   const tempBase = u.getTempDirPath();
    const subDirName = "sub-dir";
    const nestedSubDirName = "nested-sub-dir";
    const targetFileName = "targetFile.txt";

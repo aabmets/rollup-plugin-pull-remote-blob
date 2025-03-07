@@ -10,16 +10,15 @@
  */
 
 import * as c from "@src/constants";
-import * as f from "@src/progress/formatters";
-import { wormSpinnerGenerator } from "@src/progress/spinners";
-import * as tu from "@testutils";
+import * as p from "@src/progress";
+import * as u from "@testutils";
 import type * as t from "@types";
 import ansis from "ansis";
 import { describe, expect, it } from "vitest";
 
 describe("spinners", () => {
    it("should generate crawling progress bar", () => {
-      const spinner = wormSpinnerGenerator();
+      const spinner = p.wormSpinnerGenerator();
 
       const bar1 = spinner.next().value;
       expect(typeof bar1).toEqual("string");
@@ -35,73 +34,73 @@ describe("spinners", () => {
 
 describe("formatters", () => {
    it("should get file name", () => {
-      const [procRet1, procRet2] = tu.getMustDownload("Test File", undefined);
+      const [procRet1, procRet2] = u.getMustDownload("Test File", undefined);
 
-      let result = f.getFileName(procRet1, 0);
+      let result = p.getFileName(procRet1, 0);
       result = ansis.strip(result);
       expect(result).toEqual("1) Test File");
 
-      result = f.getFileName(procRet2, 9);
+      result = p.getFileName(procRet2, 9);
       result = ansis.strip(result);
       expect(result).toEqual("10) shortername.txt");
    });
 
    it("should compute clamped file name length", () => {
-      const mustDownload1 = tu.getMustDownload(undefined, undefined);
-      let result = f.clampedFileNameLength(mustDownload1);
+      const mustDownload1 = u.getMustDownload(undefined, undefined);
+      let result = p.clampedFileNameLength(mustDownload1);
       expect(result).toEqual("1) longerfilename.txt".length);
 
-      const mustDownload2 = tu.getMustDownload(undefined, "Even longer shorter name override");
-      result = f.clampedFileNameLength(mustDownload2);
+      const mustDownload2 = u.getMustDownload(undefined, "Even longer shorter name override");
+      result = p.clampedFileNameLength(mustDownload2);
       expect(result).toEqual(c.fileNameMaxDisplayLength);
 
-      const mustDownload3 = tu.getMustDownload("asd", "qwe");
-      result = f.clampedFileNameLength(mustDownload3);
+      const mustDownload3 = u.getMustDownload("asd", "qwe");
+      result = p.clampedFileNameLength(mustDownload3);
       expect(result).toEqual(c.fileNameMinDisplayLength);
    });
 
    it("should format file name", () => {
-      const mustDownload = tu.getMustDownload("qwe", "Even longer shorter name override");
-      let result = f.formatFileName(mustDownload, 0);
+      const mustDownload = u.getMustDownload("qwe", "Even longer shorter name override");
+      let result = p.formatFileName(mustDownload, 0);
       result = ansis.strip(result);
       expect(result).toEqual("1) qwe".padEnd(c.fileNameMaxDisplayLength));
-      result = f.formatFileName(mustDownload, 1);
+      result = p.formatFileName(mustDownload, 1);
       result = ansis.strip(result);
       expect(result).toEqual("2) Even longer shorter name o…");
    });
 
    it("should format file size", () => {
-      let result = f.formatFileSize(undefined);
+      let result = p.formatFileSize(undefined);
       expect(result).toEqual("   ??? B  ");
 
-      result = f.formatFileSize(1023);
+      result = p.formatFileSize(1023);
       expect(result).toEqual("  1023 B  ");
 
-      result = f.formatFileSize(1024);
+      result = p.formatFileSize(1024);
       expect(result).toEqual("   1.0 KiB");
 
-      result = f.formatFileSize(1536);
+      result = p.formatFileSize(1536);
       expect(result).toEqual("   1.5 KiB");
 
-      result = f.formatFileSize(1024 ** 2 - 1);
+      result = p.formatFileSize(1024 ** 2 - 1);
       expect(result).toEqual("1024.0 KiB");
 
-      result = f.formatFileSize(1024 ** 2);
+      result = p.formatFileSize(1024 ** 2);
       expect(result).toEqual("   1.0 MiB");
 
-      result = f.formatFileSize(1024 ** 3 - 1);
+      result = p.formatFileSize(1024 ** 3 - 1);
       expect(result).toEqual("1024.0 MiB");
 
-      result = f.formatFileSize(1024 ** 3);
+      result = p.formatFileSize(1024 ** 3);
       expect(result).toEqual("   1.0 GiB");
 
-      result = f.formatFileSize(1024 ** 4 - 1);
+      result = p.formatFileSize(1024 ** 4 - 1);
       expect(result).toEqual("1024.0 GiB");
    });
 
    it("should format status", () => {
       for (const status of Object.values(c.barStatus)) {
-         let result = f.formatStatus(status);
+         let result = p.formatStatus(status);
          result = ansis.strip(result);
          expect(result).toEqual(status.text.padEnd(c.maxBarStatusTextLength));
       }
@@ -112,7 +111,7 @@ describe("formatters", () => {
          if (status === c.barStatus.error) {
             continue;
          }
-         let result = f.formatErrors([
+         let result = p.formatErrors([
             {
                fileName: "1) some_archive.zip",
                errorMsg: undefined,
@@ -122,7 +121,7 @@ describe("formatters", () => {
          result = ansis.strip(result);
          expect(result).toEqual("");
       }
-      let result = f.formatErrors([
+      let result = p.formatErrors([
          {
             fileName: "1) some_archive.zip",
             errorMsg: "Something Bad Happened",
@@ -132,7 +131,7 @@ describe("formatters", () => {
       result = ansis.strip(result);
       expect(result).toEqual(" 1) some_archive.zip error:\n    ► Something Bad Happened");
 
-      result = f.formatErrors([
+      result = p.formatErrors([
          {
             fileName: "1) some_archive.zip",
             errorMsg: undefined,
@@ -142,7 +141,7 @@ describe("formatters", () => {
       result = ansis.strip(result);
       expect(result).toEqual(" 1) some_archive.zip error:\n    ► Unknown error");
 
-      result = f.formatErrors([
+      result = p.formatErrors([
          {
             fileName: "some_archive.zip",
             errorMsg: undefined,
@@ -154,15 +153,15 @@ describe("formatters", () => {
    });
 
    it("should produce appropriate bar formats", () => {
-      let result = f.getBarFormat(undefined);
+      let result = p.getBarFormat(undefined);
       expect(result).toContain("{unknownPct}");
-      result = f.getBarFormat(1234);
+      result = p.getBarFormat(1234);
       expect(result).toContain("{percentage}");
    });
 
    it("should produce spinner formatter", () => {
       const barStatus = [c.barStatus.waiting];
-      const fmtFn = f.getWormSpinnerBarFormatter(barStatus);
+      const fmtFn = p.getWormSpinnerBarFormatter(barStatus);
       let result = fmtFn(0, {});
       expect(result).toContain(" ");
 
