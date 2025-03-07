@@ -1,7 +1,5 @@
 # Pull Remote Blob Rollup Plugin
 
-### _Now featured on [Awesome Rollup!](https://github.com/rollup/awesome)_
-
 [![Node LTS](https://img.shields.io/node/v-lts/rollup-plugin-pull-remote-blob?style=flat&label=node&color=%231B7EBC)](https://nodejs.org/en/download)
 [![NPM License](https://img.shields.io/npm/l/rollup-plugin-pull-remote-blob)](https://github.com/aabmets/rollup-plugin-pull-remote-blob/blob/main/LICENSE)
 [![Code Coverage](https://codecov.io/gh/aabmets/rollup-plugin-pull-remote-blob/graph/badge.svg?token=462hvG1qHC)](https://codecov.io/gh/aabmets/rollup-plugin-pull-remote-blob)
@@ -16,6 +14,7 @@
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=aabmets_rollup-plugin-pull-remote-blob&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=aabmets_rollup-plugin-pull-remote-blob)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=aabmets_rollup-plugin-pull-remote-blob&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=aabmets_rollup-plugin-pull-remote-blob)
 
+### _Now featured on [Awesome Rollup!](https://github.com/rollup/awesome)_
 
 ## CLI Progress Demo
 
