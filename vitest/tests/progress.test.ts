@@ -12,6 +12,7 @@
 import * as c from "@src/constants";
 import * as f from "@src/progress/formatters";
 import { wormSpinnerGenerator } from "@src/progress/spinners";
+import * as tu from "@testutils";
 import type * as t from "@types";
 import ansis from "ansis";
 import { describe, expect, it } from "vitest";
@@ -33,21 +34,8 @@ describe("spinners", () => {
 });
 
 describe("formatters", () => {
-   function getMustDownload(pn1?: string, pn2?: string): t.ProcessorReturn[] {
-      return [
-         {
-            option: { url: "", dest: "", prettyName: pn1 },
-            details: { fileName: "longerfilename.txt" },
-         } as t.ProcessorReturn,
-         {
-            option: { url: "", dest: "", prettyName: pn2 },
-            details: { fileName: "shortername.txt" },
-         } as t.ProcessorReturn,
-      ];
-   }
-
    it("should get file name", () => {
-      const [procRet1, procRet2] = getMustDownload("Test File", undefined);
+      const [procRet1, procRet2] = tu.getMustDownload("Test File", undefined);
       let result = f.getFileName(procRet1, 0);
       expect(result).toEqual("1) Test File");
       result = f.getFileName(procRet2, 9);
@@ -55,21 +43,21 @@ describe("formatters", () => {
    });
 
    it("should compute clamped file name length", () => {
-      const mustDownload1 = getMustDownload(undefined, undefined);
+      const mustDownload1 = tu.getMustDownload(undefined, undefined);
       let result = f.clampedFileNameLength(mustDownload1);
       expect(result).toEqual("1) longerfilename.txt".length);
 
-      const mustDownload2 = getMustDownload(undefined, "Even longer shorter name override");
+      const mustDownload2 = tu.getMustDownload(undefined, "Even longer shorter name override");
       result = f.clampedFileNameLength(mustDownload2);
       expect(result).toEqual(c.fileNameMaxDisplayLength);
 
-      const mustDownload3 = getMustDownload("asd", "qwe");
+      const mustDownload3 = tu.getMustDownload("asd", "qwe");
       result = f.clampedFileNameLength(mustDownload3);
       expect(result).toEqual(c.fileNameMinDisplayLength);
    });
 
    it("should format file name", () => {
-      const mustDownload = getMustDownload("qwe", "Even longer shorter name override");
+      const mustDownload = tu.getMustDownload("qwe", "Even longer shorter name override");
       let result = f.formatFileName(mustDownload, 0);
       result = ansis.strip(result);
       expect(result).toEqual("1) qwe".padEnd(c.fileNameMaxDisplayLength));
