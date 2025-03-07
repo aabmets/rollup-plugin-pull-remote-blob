@@ -36,9 +36,13 @@ describe("spinners", () => {
 describe("formatters", () => {
    it("should get file name", () => {
       const [procRet1, procRet2] = tu.getMustDownload("Test File", undefined);
+
       let result = f.getFileName(procRet1, 0);
+      result = ansis.strip(result);
       expect(result).toEqual("1) Test File");
+
       result = f.getFileName(procRet2, 9);
+      result = ansis.strip(result);
       expect(result).toEqual("10) shortername.txt");
    });
 
@@ -62,26 +66,35 @@ describe("formatters", () => {
       result = ansis.strip(result);
       expect(result).toEqual("1) qwe".padEnd(c.fileNameMaxDisplayLength));
       result = f.formatFileName(mustDownload, 1);
+      result = ansis.strip(result);
       expect(result).toEqual("2) Even longer shorter name o…");
    });
 
    it("should format file size", () => {
       let result = f.formatFileSize(undefined);
       expect(result).toEqual("   ??? B  ");
+
       result = f.formatFileSize(1023);
       expect(result).toEqual("  1023 B  ");
+
       result = f.formatFileSize(1024);
       expect(result).toEqual("   1.0 KiB");
+
       result = f.formatFileSize(1536);
       expect(result).toEqual("   1.5 KiB");
+
       result = f.formatFileSize(1024 ** 2 - 1);
       expect(result).toEqual("1024.0 KiB");
+
       result = f.formatFileSize(1024 ** 2);
       expect(result).toEqual("   1.0 MiB");
+
       result = f.formatFileSize(1024 ** 3 - 1);
       expect(result).toEqual("1024.0 MiB");
+
       result = f.formatFileSize(1024 ** 3);
       expect(result).toEqual("   1.0 GiB");
+
       result = f.formatFileSize(1024 ** 4 - 1);
       expect(result).toEqual("1024.0 GiB");
    });
@@ -157,14 +170,18 @@ describe("formatters", () => {
       result = fmtFn(1, { barsize: 10 });
       result = ansis.strip(result);
       expect(result).toEqual("—".repeat(10));
+
       result = fmtFn(1, { barsize: 10, barIncompleteChar: "*" });
+      result = ansis.strip(result);
       expect(result).toEqual("*".repeat(10));
 
       barStatus[0] = c.barStatus.done;
       result = fmtFn(1, { barsize: 10 });
       result = ansis.strip(result);
       expect(result).toEqual("■".repeat(10));
+
       result = fmtFn(1, { barsize: 10, barCompleteChar: "@" });
+      result = ansis.strip(result);
       expect(result).toEqual("@".repeat(10));
    });
 });
