@@ -14,6 +14,7 @@ import fsp from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import archive from "@src/archive";
+import log from "@src/logger";
 import utils from "@src/utils";
 import type * as t from "@types";
 import { type MockInstance, vi } from "vitest";
@@ -105,4 +106,19 @@ export function setupProcessorTest(args?: SetupArgs): SetupReturn {
    }
    const unlinkMock = vi.spyOn(fsp, "unlink").mockResolvedValue();
    return [option, contents, unlinkMock];
+}
+
+export function mockLoggers() {
+   const spies = {
+      nothingToDownload: vi.spyOn(log, "nothingToDownload"),
+      downloadingRemoteBlobs: vi.spyOn(log, "downloadingRemoteBlobs"),
+      allDownloadsFailed: vi.spyOn(log, "allDownloadsFailed"),
+      someDownloadsFailed: vi.spyOn(log, "someDownloadsFailed"),
+      allDownloadsComplete: vi.spyOn(log, "allDownloadsComplete"),
+      allFilesExist: vi.spyOn(log, "allFilesExist"),
+   };
+   Object.values(spies).forEach((spy) => {
+      spy.mockImplementation(() => undefined);
+   });
+   return spies;
 }
