@@ -158,6 +158,7 @@ describe("removeAllDecompressedFiles", () => {
 
 describe("decompressArchive", () => {
    afterEach(vi.clearAllMocks);
+
    const option: t.RemoteBlobOption = { url: "", dest: "" };
    const details: t.DestDetails = {
       fileName: "",
