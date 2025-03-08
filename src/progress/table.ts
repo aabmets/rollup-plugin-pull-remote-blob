@@ -13,7 +13,7 @@ import type * as t from "@types";
 import ansis from "ansis";
 import * as f from "./formatters.js";
 
-function getLabels(mustDownload: t.ProcessorReturn[]): string[] {
+export function getLabels(mustDownload: t.ProcessorReturn[]): string[] {
    const cfnLength = f.clampedFileNameLength(mustDownload);
    return [
       `  ${"Index – File name".padEnd(cfnLength)}  `,

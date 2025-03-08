@@ -28,6 +28,9 @@ export function getMustDownload(prettyName1?: string, prettyName2?: string): t.P
             dest: "downloads",
             prettyName: prettyName1,
          },
+         entry: {
+            blobOptionsDigest: "digest1",
+         },
          details: {
             fileName: "longerfilename.txt",
          },
@@ -38,6 +41,9 @@ export function getMustDownload(prettyName1?: string, prettyName2?: string): t.P
             url: "https://www.example.com/second_file.json",
             dest: "downloads",
             prettyName: prettyName2,
+         },
+         entry: {
+            blobOptionsDigest: "digest2",
          },
          details: {
             fileName: "shortername.txt",

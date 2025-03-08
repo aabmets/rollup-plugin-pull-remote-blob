@@ -15,7 +15,7 @@ import * as c from "../constants";
 import * as f from "./formatters.js";
 import * as tbl from "./table.js";
 
-export function getBarPayload(fileName: string, sizeBytes?: number) {
+export function getBarPayload(fileName: string, sizeBytes?: number): t.BarPayload {
    return {
       unknownPct: sizeBytes ? undefined : "  ?",
       fileSize: f.formatFileSize(sizeBytes),
@@ -71,6 +71,7 @@ export function getController(args: t.ControllerArgs): t.BarController {
          }
          bar.stop();
       },
+      bar,
    };
 }
 
@@ -81,6 +82,7 @@ export function getDisabledController({ fileName }: t.ControllerArgs): t.BarCont
       setStatus: () => null,
       increment: () => null,
       stop: () => null,
+      bar: undefined,
    };
 }
 

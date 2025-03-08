@@ -124,6 +124,7 @@ export interface BarController {
    setStatus: (status: any) => void;
    increment: (amount: number) => void;
    stop: () => void;
+   bar?: cp.Bar;
 }
 
 export interface ProgressBarMap {
@@ -165,6 +166,13 @@ export interface MessageHandlerArgs {
    error: Error;
    bar: BarController;
    terminate: (status: BarStatus, errorMsg?: string) => void;
+}
+
+export interface BarPayload {
+   unknownPct?: string;
+   fileName: string;
+   fileSize: string;
+   status: string;
 }
 
 export type Condition = (errorMsg?: string) => boolean;

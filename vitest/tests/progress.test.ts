@@ -14,6 +14,8 @@ import * as p from "@src/progress";
 import * as u from "@testutils";
 import type * as t from "@types";
 import ansis from "ansis";
+import cp from "cli-progress";
+import { assert, func, object, optional, string } from "superstruct";
 import { describe, expect, it } from "vitest";
 
 describe("spinners", () => {
@@ -182,5 +184,167 @@ describe("formatters", () => {
       result = fmtFn(1, { barsize: 10, barCompleteChar: "@" });
       result = ansis.strip(result);
       expect(result).toEqual("@".repeat(10));
+   });
+});
+
+describe("table", () => {
+   const labels = [
+      "Index – File name",
+      "File size – Progress bar – Percent complete",
+      "ETA",
+      "Elapsed",
+      "Status",
+   ];
+
+   it("should generate expected labels", () => {
+      const result = p.getLabels(u.getMustDownload());
+      for (const label of labels) {
+         expect(result.join("")).toContain(label);
+      }
+   });
+
+   it("should generate expected header", () => {
+      let result = p.getTableHeader(u.getMustDownload());
+      result = ansis.strip(result);
+      for (const char of "┌┬┐│├┼┤─") {
+         expect(result).toContain(char);
+      }
+      for (const label of labels) {
+         expect(result).toContain(label);
+      }
+   });
+
+   it("should generate expected footer", () => {
+      let result = p.getTableFooter(u.getMustDownload());
+      result = ansis.strip(result);
+      for (const char of "└┴┘─") {
+         expect(result).toContain(char);
+      }
+   });
+});
+
+describe("bars", () => {
+   it("should return expected bar payload object", () => {
+      const BarPayloadStruct = object({
+         unknownPct: optional(string()),
+         fileSize: string(),
+         fileName: string(),
+         status: string(),
+      });
+      const result = p.getBarPayload("asdfg.txt", 3456000);
+      assert(result, BarPayloadStruct);
+   });
+
+   it("should return expected bar options object", () => {
+      const BarOptionsStruct = object({
+         format: string(),
+         formatTime: func(),
+         formatBar: optional(func()),
+         barGlue: optional(string()),
+      });
+      let result = p.getBarOptions([c.barStatus.done], undefined);
+      assert(result, BarOptionsStruct);
+      expect(result.formatBar).toBeInstanceOf(Function);
+      expect(result.barGlue).toBeUndefined();
+
+      result = p.getBarOptions([c.barStatus.done], 3456000);
+      assert(result, BarOptionsStruct);
+      expect(result.formatBar).toBeUndefined();
+      expect(result.formatTime).toBeInstanceOf(Function);
+      expect(typeof result.barGlue).toEqual("string");
+      const fmtTime = result.formatTime(1000, { autopaddingChar: "" }, 2);
+      expect(fmtTime).toContain("16m40s");
+   });
+
+   it("should return expected bar controller object", () => {
+      const BarControllerStruct = object({
+         fileName: string(),
+         isError: func(),
+         setStatus: func(),
+         increment: func(),
+         stop: func(),
+         bar: optional(object()),
+      });
+      const args = {
+         fileName: "somefile.txt",
+         sizeBytes: 1000000,
+         showProgress: true,
+         multiBar: new cp.MultiBar({
+            barsize: c.progressBarWidth,
+            clearOnComplete: false,
+            barCompleteChar: "■",
+            barIncompleteChar: "—",
+            autopadding: true,
+            hideCursor: true,
+         }),
+      };
+      let ctrl = p.getDisabledController(args);
+      assert(ctrl, BarControllerStruct);
+      ctrl.setStatus(c.barStatus.error);
+      expect(ctrl.isError()).toEqual(false);
+      expect(ctrl.increment(1)).toEqual(null);
+      expect(ctrl.stop()).toEqual(null);
+      expect(ctrl.bar).toBeUndefined();
+
+      ctrl = p.getController(args);
+      assert(ctrl, BarControllerStruct);
+      ctrl.setStatus(c.barStatus.error);
+      expect(ctrl.isError()).toEqual(true);
+
+      expect(typeof ctrl.bar).toEqual("object");
+      if (typeof ctrl.bar === "object") {
+         const bar = ctrl.bar;
+         bar.start(args.sizeBytes, 0);
+
+         expect(bar.getProgress()).toEqual(0);
+         ctrl.increment(1234);
+         expect(bar.getProgress() * 1000000).toEqual(1234);
+
+         expect(bar.isActive).toEqual(true);
+         ctrl.stop();
+         expect(bar.isActive).toEqual(false);
+      }
+
+      ctrl = p.getController({ ...args, sizeBytes: undefined });
+      assert(ctrl, BarControllerStruct);
+
+      expect(typeof ctrl.bar).toEqual("object");
+      if (typeof ctrl.bar === "object") {
+         const bar = ctrl.bar;
+         bar.start(0, -1);
+
+         expect(bar.getProgress()).toEqual(0);
+         ctrl.increment(1234);
+         expect(bar.getProgress()).toEqual(0);
+
+         expect(bar.isActive).toEqual(true);
+         ctrl.stop();
+         expect(bar.isActive).toEqual(false);
+         expect(bar.getProgress()).toEqual(1);
+
+         ctrl.setStatus(c.barStatus.done);
+         ctrl.stop();
+         expect(bar.getProgress()).toEqual(1);
+      }
+   });
+
+   it("should return expected progress bars", () => {
+      const md = u.getMustDownload();
+      let ret = p.getProgressBars({
+         config: { blobs: [], showProgress: false },
+         mustDownload: md,
+      });
+      Object.entries(ret.progBarMap).forEach(([key, ctrl], index) => {
+         expect(key).toEqual(md[index].entry.blobOptionsDigest);
+         expect(ctrl.bar).toBeUndefined();
+      });
+      ret = p.getProgressBars({
+         config: { blobs: [], showProgress: true },
+         mustDownload: md,
+      });
+      Object.entries(ret.progBarMap).forEach(([key, ctrl], index) => {
+         expect(key).toEqual(md[index].entry.blobOptionsDigest);
+         expect(typeof ctrl.bar).toEqual("object");
+      });
    });
 });
