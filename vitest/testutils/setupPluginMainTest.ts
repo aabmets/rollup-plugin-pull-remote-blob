@@ -9,6 +9,7 @@
  *   SPDX-License-Identifier: Apache-2.0
  */
 
+import fs from "node:fs";
 import * as c from "@src/constants";
 import * as d from "@src/downloader";
 import utils from "@src/utils";
@@ -16,7 +17,11 @@ import type * as t from "@types";
 import { vi } from "vitest";
 import { mockLoggers } from "./various.js";
 
-export function setupPluginMainTest(status1: t.BarStatus, status2?: t.BarStatus) {
+export function setupPluginMainTest(
+   status1: t.BarStatus,
+   status2?: t.BarStatus,
+   addHistoryEntry?: boolean,
+) {
    const getResult = (status: t.BarStatus) => {
       return {
          fileName: "testFile.txt",
@@ -27,8 +32,30 @@ export function setupPluginMainTest(status1: t.BarStatus, status2?: t.BarStatus)
    };
    const results = [getResult(status1), getResult(status2 ?? status1)];
    vi.spyOn(d, "downloadFiles").mockReturnValue(Promise.resolve(results));
+
+   const option: t.RemoteBlobOption = {
+      url: "https://www.example.com/testFile.txt",
+      dest: "download",
+   };
+   vi.spyOn(fs, "existsSync").mockReturnValue(true);
    vi.spyOn(utils, "writeHistoryFile").mockImplementation(() => undefined);
-   const blobs: t.RemoteBlobOption[] = [{ url: "https://www.example.com", dest: "download" }];
-   const config: t.MergedConfig = { ...c.defaultPluginConfig, blobs };
-   return { config, logSpies: mockLoggers() };
+   vi.spyOn(utils, "readHistoryFile").mockImplementation(() => {
+      const contents: t.HistoryFileContents = {};
+      if (addHistoryEntry) {
+         const digest = utils.digestRemoteBlobOption(option);
+         contents[digest] = {
+            ...option,
+            blobOptionsDigest: digest,
+            decompression: {
+               optionsDigest: "",
+               filesList: [],
+            },
+         };
+      }
+      return contents;
+   });
+   return {
+      config: { ...c.defaultPluginConfig, blobs: [option] },
+      logSpies: mockLoggers(),
+   };
 }
