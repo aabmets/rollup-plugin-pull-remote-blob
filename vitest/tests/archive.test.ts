@@ -78,14 +78,14 @@ describe("allDecompressedFilesExist", () => {
       };
       const spy = vi.spyOn(fsp, "access");
 
-      spy.mockImplementation(() => new Promise((resolve) => resolve(undefined)));
+      spy.mockImplementation(() => Promise.resolve(undefined));
       const result1 = await archive.allDecompressedFilesExist(entry, details);
       expect(result1).toEqual(true);
       expect(spy).toHaveBeenCalledTimes(3);
 
       spy.mockClear();
 
-      spy.mockImplementation(() => new Promise((_, reject) => reject(undefined)));
+      spy.mockImplementation(() => Promise.reject(undefined));
       const result2 = await archive.allDecompressedFilesExist(entry, details);
       expect(result2).toEqual(false);
       expect(spy).toHaveBeenCalledTimes(3);
@@ -135,9 +135,9 @@ describe("removeAllDecompressedFiles", () => {
       const unlinkSpy = vi.spyOn(fsp, "unlink");
       const readdirSpy = vi.spyOn(fsp, "readdir");
 
-      rmdirSpy.mockImplementation(() => new Promise((resolve) => resolve(undefined)));
-      unlinkSpy.mockImplementation(() => new Promise((resolve) => resolve(undefined)));
-      readdirSpy.mockImplementationOnce(() => new Promise((resolve) => resolve([])));
+      rmdirSpy.mockImplementation(() => Promise.resolve(undefined));
+      unlinkSpy.mockImplementation(() => Promise.resolve(undefined));
+      readdirSpy.mockImplementationOnce(() => Promise.resolve([]));
 
       await archive.removeAllDecompressedFiles(entryWithFiles, details);
       expect(unlinkSpy).toHaveBeenCalledTimes(3);
@@ -147,7 +147,7 @@ describe("removeAllDecompressedFiles", () => {
       rmdirSpy.mockClear();
       unlinkSpy.mockClear();
       readdirSpy.mockClear();
-      readdirSpy.mockImplementationOnce(() => new Promise((resolve) => resolve([{} as Dirent])));
+      readdirSpy.mockImplementationOnce(() => Promise.resolve([{} as Dirent]));
 
       await archive.removeAllDecompressedFiles(entryWithFiles, details);
       expect(unlinkSpy).toHaveBeenCalledTimes(3);
