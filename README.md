@@ -3,6 +3,7 @@
 [![Node LTS](https://img.shields.io/node/v-lts/rollup-plugin-pull-remote-blob?style=flat&label=node&color=%231B7EBC)](https://nodejs.org/en/download)
 [![NPM License](https://img.shields.io/npm/l/rollup-plugin-pull-remote-blob)](https://github.com/aabmets/rollup-plugin-pull-remote-blob/blob/main/LICENSE)
 [![Code Coverage](https://codecov.io/gh/aabmets/rollup-plugin-pull-remote-blob/graph/badge.svg?token=462hvG1qHC)](https://codecov.io/gh/aabmets/rollup-plugin-pull-remote-blob)
+[![Run Vitest and Upload Code Coverage](https://img.shields.io/github/actions/workflow/status/aabmets/rollup-plugin-pull-remote-blob/vitest-codecov.yaml?label=tests)](https://github.com/aabmets/rollup-plugin-pull-remote-blob/actions/workflows/vitest-codecov.yaml)
 [![NPM Downloads](https://img.shields.io/npm/dw/rollup-plugin-pull-remote-blob)](https://www.npmjs.com/package/rollup-plugin-pull-remote-blob)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=aabmets_rollup-plugin-pull-remote-blob&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=aabmets_rollup-plugin-pull-remote-blob)
