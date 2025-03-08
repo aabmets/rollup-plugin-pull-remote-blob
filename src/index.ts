@@ -12,13 +12,13 @@
 import type * as t from "@types";
 import { assert } from "superstruct";
 import * as c from "./constants.js";
-import { downloadFiles } from "./downloader.js";
+import * as d from "./downloader.js";
 import log from "./logger.js";
 import { processBlobOption } from "./processor.js";
 import { PluginConfigStruct } from "./schemas.js";
 import utils from "./utils.js";
 
-async function pluginMain(config: t.MergedConfig): Promise<void> {
+export async function pluginMain(config: t.MergedConfig): Promise<void> {
    if (config.blobs.length === 0) {
       log.nothingToDownload();
       return;
@@ -32,7 +32,7 @@ async function pluginMain(config: t.MergedConfig): Promise<void> {
 
    if (mustDownload.length > 0) {
       log.downloadingRemoteBlobs();
-      const results = await downloadFiles({ config, mustDownload });
+      const results = await d.downloadFiles({ config, mustDownload });
 
       const errorPredicate = ({ status }: t.WorkerResult) => status === c.barStatus.error;
       if (results.every(errorPredicate)) {
