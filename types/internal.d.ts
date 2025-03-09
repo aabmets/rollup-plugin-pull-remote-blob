@@ -89,7 +89,7 @@ export interface ProcessorReturn {
 }
 
 export interface DownloaderArgs {
-   config: PluginConfig;
+   config: MergedConfig;
    mustDownload: ProcessorReturn[];
 }
 
@@ -153,7 +153,7 @@ export interface BarStatusMap {
 export type Error = { isRaised: boolean };
 
 export interface WorkerRunnerArgs {
-   config: PluginConfig;
+   config: MergedConfig;
    procRet: ProcessorReturn;
    progBarMap: ProgressBarMap;
    error: Error;
@@ -161,7 +161,7 @@ export interface WorkerRunnerArgs {
 
 export interface MessageHandlerArgs {
    message: WorkerMessage;
-   config: PluginConfig;
+   config: MergedConfig;
    entry: HistoryFileEntry;
    error: Error;
    bar: BarController;

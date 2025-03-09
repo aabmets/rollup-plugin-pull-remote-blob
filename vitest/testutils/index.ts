@@ -11,6 +11,7 @@
 
 export * from "./getMessageHandlerArgs.js";
 export * from "./getMustDownload.js";
+export * from "./getWorkerRunnerArgs.js";
 export * from "./setupAxiosHeadTest.js";
 export * from "./setupPluginMainTest.js";
 export * from "./setupProcessorTest.js";

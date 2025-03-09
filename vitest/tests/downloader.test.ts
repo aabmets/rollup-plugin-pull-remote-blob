@@ -9,6 +9,8 @@
  *   SPDX-License-Identifier: Apache-2.0
  */
 
+import fs from "node:fs";
+import path from "node:path";
 import * as c from "@src/constants";
 import * as d from "@src/downloader";
 import * as u from "@testutils";
@@ -108,5 +110,32 @@ describe("handleWorkerMessage", () => {
       d.handleWorkerMessage(args as t.MessageHandlerArgs);
 
       expect(args.bar.setStatus).toHaveBeenCalledWith(c.barStatus.decompressing);
+   });
+});
+
+describe("runDownloadWorker", () => {
+   const options = { retry: 3 };
+
+   it("should download and decompress remote archives", options, async () => {
+      const args = u.getWorkerRunnerArgs();
+      const result = await d.runDownloadWorker(args);
+      const filePath = path.resolve(args.procRet.option.dest, "README.md");
+
+      expect(fs.existsSync(filePath)).toEqual(true);
+      expect(result.status.text).toEqual(c.barStatus.done.text);
+      expect(result.fileName).toEqual("main.zip");
+      expect(result.errorMsg).toBeUndefined();
+   });
+
+   it("should set errorMsg when remote files do not exist", options, async () => {
+      const args = u.getWorkerRunnerArgs();
+      args.procRet.option.url = `${args.procRet.option.url}zzz`;
+      const result = await d.runDownloadWorker(args);
+      const filePath = path.resolve(args.procRet.option.dest, "README.md");
+
+      expect(fs.existsSync(filePath)).toEqual(false);
+      expect(result.status.text).toEqual(c.barStatus.error.text);
+      expect(result.fileName).toEqual("main.zip");
+      expect(result.errorMsg).toContain("404");
    });
 });

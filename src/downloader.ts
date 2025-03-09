@@ -87,6 +87,7 @@ export async function runDownloadWorker(args: t.WorkerRunnerArgs): Promise<t.Wor
       worker.on("message", (message: t.WorkerMessage) => {
          handleWorkerMessage({ message, config, entry, error, bar, terminate });
       });
+      /* v8 ignore next 3 */
       worker.on("error", (err: Error) => {
          terminate(c.barStatus.error, err.message);
       });

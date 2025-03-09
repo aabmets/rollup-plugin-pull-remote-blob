@@ -24,16 +24,11 @@ import { describe, expect, it } from "vitest";
 describe("worker_threads", () => {
    const options = { retry: 3 };
 
-   it("should download and decompress archives", options, async () => {
-      const option: t.RemoteBlobOption = {
-         url: "https://github.com/aabmets/rollup-plugin-pull-remote-blob/archive/refs/heads/main.zip",
-         dest: u.getTempDirPath(),
-         decompress: {
-            filter: ["README.md", "src"],
-            strip: 1,
-         },
-      };
-      const config = { blobs: [option] };
+   it("should download and decompress remote archives", options, async () => {
+      const {
+         config,
+         procRet: { option },
+      } = u.getWorkerRunnerArgs();
       assert(config, s.PluginConfigStruct);
 
       let details = utils.getDestDetails(option);
