@@ -1,5 +1,5 @@
 /*
- *   MIT License
+ *   Apache License
  *
  *   Copyright (c) 2024, Mattias Aabmets
  *
@@ -11,18 +11,20 @@
 
 import fsp from "node:fs/promises";
 import path from "node:path";
-import { Worker } from "node:worker_threads";
+import wrk from "node:worker_threads";
 import * as c from "@src/constants";
 import * as s from "@src/schemas";
 import utils from "@src/utils";
+import { Message, downloadFile } from "@src/worker";
 import * as u from "@testutils";
 import type * as t from "@types";
 import { assert } from "superstruct";
 import { describe, expect, it } from "vitest";
 
-describe("worker", () => {
+describe("worker_threads", () => {
    const options = { retry: 3 };
-   it("should use worker threads to download and decompress archives", options, async () => {
+
+   it("should download and decompress archives", options, async () => {
       const option: t.RemoteBlobOption = {
          url: "https://github.com/aabmets/rollup-plugin-pull-remote-blob/archive/refs/heads/main.zip",
          dest: u.getTempDirPath(),
@@ -39,7 +41,7 @@ describe("worker", () => {
       expect(details.dirExists).toEqual(false);
 
       const absolutePath = utils.searchUpwards(c.workerFilePath);
-      const worker = new Worker(absolutePath, { workerData: { option, details } });
+      const worker = new wrk.Worker(absolutePath, { workerData: { option, details } });
       let downloadedBytes = 0;
 
       const result: boolean = await new Promise((resolve, reject) => {
@@ -83,5 +85,69 @@ describe("worker", () => {
 
       const filesList = await fsp.readdir(srcDirPath);
       expect(filesList).toContain("index.ts");
+   });
+});
+
+describe("Message", () => {
+   const mocks = u.applyWorkerMocks();
+
+   it("should post progress message", () => {
+      const fakeBuffer = Buffer.alloc(10);
+      Message.progress(fakeBuffer);
+      expect(mocks.postMessage).toHaveBeenCalledWith({ type: "progress", bytes: 10 });
+   });
+
+   it("should post error message", () => {
+      const error = new Error("Test error");
+      Message.error(error);
+      expect(mocks.postMessage).toHaveBeenCalledWith({ type: "error", error: "Test error" });
+   });
+
+   it("should post done message", () => {
+      const filesList = ["file1.txt", "file2.txt"];
+      Message.done(filesList);
+      expect(mocks.postMessage).toHaveBeenCalledWith({ type: "done", filesList });
+   });
+
+   it("should post decompressing message", () => {
+      Message.decompressing();
+      expect(mocks.postMessage).toHaveBeenCalledWith({ type: "decompressing" });
+   });
+});
+
+describe("downloadFile", () => {
+   const mocks = u.applyWorkerMocks();
+
+   it("should download file without decompressing", async () => {
+      const [chunk] = u.setupWorkerTest({ decompress: false });
+      await downloadFile();
+      expect(mocks.postMessage).toHaveBeenCalledWith({ type: "progress", bytes: chunk.length });
+      expect(mocks.postMessage).toHaveBeenCalledWith({ type: "done", filesList: [] });
+   });
+
+   it("should download file and decompress archive", async () => {
+      const [chunk, fakeFilesList] = u.setupWorkerTest({ decompress: true });
+      await downloadFile();
+      expect(mocks.postMessage).toHaveBeenCalledWith({ type: "progress", bytes: chunk.length });
+      expect(mocks.postMessage).toHaveBeenCalledWith({ type: "decompressing" });
+      expect(mocks.postMessage).toHaveBeenCalledWith({ type: "done", filesList: fakeFilesList });
+   });
+
+   it("should send error message on response error", async () => {
+      u.setupWorkerTest({ throwResponseError: true });
+      await downloadFile().catch(() => null);
+      expect(mocks.postMessage).toHaveBeenCalledWith({
+         type: "error",
+         error: "Fake response error",
+      });
+   });
+
+   it("should send error message on file stream error", async () => {
+      u.setupWorkerTest({ throwFileStreamError: true });
+      await downloadFile().catch(() => null);
+      expect(mocks.postMessage).toHaveBeenCalledWith({
+         type: "error",
+         error: "Fake file stream error",
+      });
    });
 });
