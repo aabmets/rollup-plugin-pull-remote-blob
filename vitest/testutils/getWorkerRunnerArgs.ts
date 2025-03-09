@@ -17,26 +17,22 @@ import type * as t from "@types";
 import { getTempDirPath } from "./various";
 
 export function getWorkerRunnerArgs(args?: { breakUrl?: boolean }): t.WorkerRunnerArgs {
-   let url = [
+   const url = [
       "https://github.com/aabmets",
       "/rollup-plugin-pull-remote-blob",
       "/archive/refs/heads/main.zip",
    ].join("");
-   if (args?.breakUrl) {
-      url += "zzz";
-   }
-   const dest = getTempDirPath();
    const option: t.RemoteBlobOption = {
-      url,
-      dest,
+      url: args?.breakUrl ? `${url}zzz` : url,
+      dest: getTempDirPath(),
       decompress: {
          filter: ["README.md", "src"],
          strip: 1,
       },
    };
    const entry: t.HistoryFileEntry = {
-      url,
-      dest,
+      url: option.url,
+      dest: option.dest,
       blobOptionsDigest: utils.digestRemoteBlobOption(option),
       decompression: {
          optionsDigest: archive.digestDecompressionOptions(option.decompress),
