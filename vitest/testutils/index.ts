@@ -10,6 +10,7 @@
  */
 
 export * from "./getMustDownload.js";
+export * from "./setupAxiosHeadTest.js";
 export * from "./setupPluginMainTest.js";
 export * from "./setupProcessorTest.js";
 export * from "./setupWorkerTest.js";

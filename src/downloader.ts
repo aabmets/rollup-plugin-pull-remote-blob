@@ -21,7 +21,7 @@ import utils from "./utils.js";
 export async function setRemoteFileSizeBytes(procRet: t.ProcessorReturn): Promise<void> {
    let value: undefined | number;
    try {
-      if ("sizeBytes" in procRet.option) {
+      if (procRet.option?.sizeBytes) {
          value = procRet.option.sizeBytes;
       } else {
          const resp: AxiosResponse = await axios.head(procRet.option.url);
