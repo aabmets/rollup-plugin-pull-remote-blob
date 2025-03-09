@@ -9,6 +9,7 @@
  *   SPDX-License-Identifier: Apache-2.0
  */
 
+export * from "./getMessageHandlerArgs.js";
 export * from "./getMustDownload.js";
 export * from "./setupAxiosHeadTest.js";
 export * from "./setupPluginMainTest.js";
