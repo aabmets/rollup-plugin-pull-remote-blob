@@ -16,9 +16,12 @@ import utils from "@src/utils";
 import type * as t from "@types";
 import { getTempDirPath } from "./various";
 
-export function getWorkerRunnerArgs(): t.WorkerRunnerArgs {
-   const url =
+export function getWorkerRunnerArgs(args?: { breakUrl?: boolean }): t.WorkerRunnerArgs {
+   let url =
       "https://github.com/aabmets/rollup-plugin-pull-remote-blob/archive/refs/heads/main.zip";
+   if (args?.breakUrl) {
+      url += "zzz";
+   }
    const dest = getTempDirPath();
    const option: t.RemoteBlobOption = {
       url,
