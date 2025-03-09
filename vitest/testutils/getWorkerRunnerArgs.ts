@@ -42,6 +42,7 @@ export function getWorkerRunnerArgs(args?: { breakUrl?: boolean }): t.WorkerRunn
    return {
       config: {
          ...c.defaultPluginConfig,
+         showProgress: false,
          blobs: [option],
       },
       procRet: {

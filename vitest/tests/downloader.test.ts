@@ -140,3 +140,41 @@ describe("runDownloadWorker", () => {
       expect(result.errorMsg).toContain("404");
    });
 });
+
+describe("downloadFiles", () => {
+   const options = { retry: 3 };
+
+   it("should download and decompress multiple remote archives", options, async () => {
+      const args1 = u.getWorkerRunnerArgs();
+      const args2 = u.getWorkerRunnerArgs();
+      const config = {
+         ...args1.config,
+         blobs: [args1.procRet.option, args2.procRet.option],
+      };
+      const mustDownload = [args1.procRet, args2.procRet];
+      const results = await d.downloadFiles({ config, mustDownload });
+      results.forEach((result) => {
+         expect(result.errorMsg).toBeUndefined();
+         expect(result.status.text).toEqual(c.barStatus.done.text);
+      });
+   });
+
+   it(
+      "should set errorMsg and halt downloads when remote files do not exist",
+      options,
+      async () => {
+         const args1 = u.getWorkerRunnerArgs({ breakUrl: true });
+         const args2 = u.getWorkerRunnerArgs();
+         const config = {
+            ...args1.config,
+            blobs: [args1.procRet.option, args2.procRet.option],
+         };
+         const mustDownload = [args1.procRet, args2.procRet];
+         const [res1, res2] = await d.downloadFiles({ config, mustDownload });
+         expect(res1.errorMsg).toContain("404");
+         expect(res1.status.text).toEqual(c.barStatus.error.text);
+         expect(res2.errorMsg).toBeUndefined();
+         expect(res2.status.text).toEqual(c.barStatus.halted.text);
+      },
+   );
+});
