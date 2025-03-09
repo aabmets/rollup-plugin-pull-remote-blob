@@ -1,5 +1,5 @@
 /*
- *   MIT License
+ *   Apache License
  *
  *   Copyright (c) 2024, Mattias Aabmets
  *

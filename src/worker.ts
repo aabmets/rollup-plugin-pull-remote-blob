@@ -1,5 +1,5 @@
 /*
- *   MIT License
+ *   Apache License
  *
  *   Copyright (c) 2024, Mattias Aabmets
  *
@@ -16,7 +16,7 @@ import type * as t from "@types";
 import axios from "axios";
 import archive from "./archive.js";
 
-const Message = {
+export const Message = {
    progress: (chunk: Buffer): void => {
       wrk.parentPort?.postMessage({ type: "progress", bytes: chunk.length });
    },

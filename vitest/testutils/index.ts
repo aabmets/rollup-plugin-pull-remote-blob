@@ -1,5 +1,5 @@
 /*
- *   MIT License
+ *   Apache License
  *
  *   Copyright (c) 2024, Mattias Aabmets
  *
@@ -12,4 +12,5 @@
 export * from "./getMustDownload.js";
 export * from "./setupPluginMainTest.js";
 export * from "./setupProcessorTest.js";
+export * from "./setupWorkerTest.js";
 export * from "./various.js";
